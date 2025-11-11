@@ -24,11 +24,11 @@ async function calculateRiskScore(propertyId: string): Promise<number> {
   riskScore += Math.min(claimCount * 10, 30)
 
   // High-value claims
-  const highValueClaims = property.insuranceClaims.filter(c => c.amount && c.amount > 20000)
+  const highValueClaims = property.insuranceClaims.filter((c: { amount: number | null }) => c.amount != null && c.amount > 20000)
   riskScore += highValueClaims.length * 5
 
   // Frequent repairs
-  const recentWorkEvents = property.workEvents.filter(w => {
+  const recentWorkEvents = property.workEvents.filter((w: { workDate: Date }) => {
     const workDate = new Date(w.workDate)
     const twoYearsAgo = new Date()
     twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2)
@@ -39,7 +39,7 @@ async function calculateRiskScore(propertyId: string): Promise<number> {
   }
 
   // Rental history
-  const rentalYears = property.rentalSignals.reduce((total, rental) => {
+  const rentalYears = property.rentalSignals.reduce((total: number, rental: { startDate: Date | null; endDate: Date | null }) => {
     const start = rental.startDate ? new Date(rental.startDate) : new Date()
     const end = rental.endDate ? new Date(rental.endDate) : new Date()
     return total + (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 365)
@@ -96,7 +96,7 @@ export async function GET(
         type: 'insurance_claims',
         severity: property.insuranceClaims.length > 2 ? 'high' : 'medium',
         message: `${property.insuranceClaims.length} insurance claim${property.insuranceClaims.length !== 1 ? 's' : ''} on record`,
-        details: property.insuranceClaims.map(c => ({
+        details: property.insuranceClaims.map((c: { claimType: string; claimDate: Date; amount: number | null }) => ({
           type: c.claimType,
           date: c.claimDate,
           amount: c.amount,
@@ -113,7 +113,7 @@ export async function GET(
     }
 
     if (property.rentalSignals.length > 0) {
-      const rentalYears = property.rentalSignals.reduce((total, rental) => {
+      const rentalYears = property.rentalSignals.reduce((total: number, rental: { startDate: Date | null; endDate: Date | null }) => {
         const start = rental.startDate ? new Date(rental.startDate) : new Date()
         const end = rental.endDate ? new Date(rental.endDate) : new Date()
         return total + (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 365)
