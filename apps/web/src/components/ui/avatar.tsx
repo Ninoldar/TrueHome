@@ -7,8 +7,10 @@ import { cn } from '../../lib/utils'
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & {
+    children?: React.ReactNode
+  }
+>(({ className, children, ...props }, ref) => (
   <AvatarPrimitive.Root
     ref={ref}
     data-slot="avatar"
@@ -17,7 +19,9 @@ const Avatar = React.forwardRef<
       className,
     )}
     {...props}
-  />
+  >
+    {children}
+  </AvatarPrimitive.Root>
 ))
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
