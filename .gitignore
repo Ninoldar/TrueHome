@@ -43,6 +43,18 @@ Thumbs.db
 # Prisma
 packages/db/migrations/
 
+# Build artifacts
+*.tsbuildinfo
+**/dist/
+**/.next/
+**/build/
+packages/db/*.js
+packages/db/*.d.ts
+packages/db/lib/
+apps/api/tsconfig.build.tsbuildinfo
+apps/api/tsconfig.tsbuildinfo
+apps/web/next-env.d.ts
+
 # Docker
 docker-compose.override.yml
 
