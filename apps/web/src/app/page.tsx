@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import PropertySearch from '@/components/PropertySearch'
+import PropertySearch from '../components/PropertySearch'
 
 export default function Home() {
   return (
