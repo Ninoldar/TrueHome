@@ -1,4 +1,4 @@
-import { CheckCircle2 } from "lucide-react"
+import { CheckCircle2, Wrench, ShieldCheck } from "lucide-react"
 
 const benefits = [
   {
@@ -31,6 +31,16 @@ const benefits = [
       "Track market trends and patterns",
     ],
   },
+  {
+    audience: "Homeowners & Contractors",
+    description: "Build and maintain your property's verified history",
+    points: [
+      "Access TrueHome certified professionals",
+      "Automatically log all work to property history",
+      "Increase property value with documented improvements",
+      "Maintain warranty and service records",
+    ],
+  },
 ]
 
 export function Benefits() {
@@ -46,7 +56,7 @@ export function Benefits() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {benefits.map((benefit, index) => (
             <div key={index} className="bg-card border border-border rounded-2xl p-8">
               <div className="mb-6">
@@ -64,6 +74,42 @@ export function Benefits() {
               </ul>
             </div>
           ))}
+        </div>
+
+        {/* TrueHome Certified Professionals Section */}
+        <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-2xl p-8 md:p-12">
+          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
+            <div className="flex items-center justify-center w-16 h-16 bg-primary rounded-2xl shrink-0">
+              <ShieldCheck className="w-8 h-8 text-primary-foreground" />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
+                TrueHome Certified Professionals Network
+              </h3>
+              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
+                Connect with verified electricians, plumbers, roofers, HVAC specialists, and more. 
+                All work performed by TrueHome certified professionals is automatically logged to your 
+                property&apos;s permanent history, creating a comprehensive record that increases value and transparency.
+              </p>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  "Licensed Electricians",
+                  "Certified Plumbers",
+                  "Professional Roofers",
+                  "HVAC Specialists",
+                  "General Contractors",
+                  "Home Inspectors",
+                  "Pest Control Experts",
+                  "Landscapers",
+                ].map((profession, index) => (
+                  <div key={index} className="flex items-center gap-2 bg-background/50 rounded-lg p-3">
+                    <Wrench className="w-4 h-4 text-primary shrink-0" />
+                    <span className="text-sm font-medium text-foreground">{profession}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
