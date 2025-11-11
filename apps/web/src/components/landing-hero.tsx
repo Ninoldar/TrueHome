@@ -1,8 +1,7 @@
-import { Button } from "../components/ui/button"
-import { Input } from "../components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
 import Link from "next/link"
-import PropertySearch from "./PropertySearch"
 
 export function LandingHero() {
   return (
@@ -20,8 +19,15 @@ export function LandingHero() {
           </div>
 
           <div className="mx-auto max-w-xl space-y-4">
-            {/* PropertySearch component with autocomplete and search functionality */}
-            <PropertySearch />
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input placeholder="Enter property address..." className="h-12 pl-10 text-base" />
+              </div>
+              <Button size="lg" className="h-12 px-8">
+                Get Report
+              </Button>
+            </div>
             <p className="text-sm text-muted-foreground">Try it free • 1.2M+ reports generated</p>
           </div>
 
