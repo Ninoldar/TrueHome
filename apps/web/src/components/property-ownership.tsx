@@ -1,5 +1,4 @@
 import { Card } from "../components/ui/card"
-import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import { Calendar, DollarSign, TrendingUp } from "lucide-react"
 
 const owners = [
@@ -54,9 +53,9 @@ export function PropertyOwnership() {
           <Card key={index} className="p-6 hover:shadow-lg transition-all">
             <div className="flex flex-col lg:flex-row gap-6">
               <div className="flex items-start gap-4 flex-1">
-                <Avatar className="h-14 w-14 bg-primary text-primary-foreground shrink-0">
-                  <AvatarFallback className="text-lg font-semibold">{owner.initials}</AvatarFallback>
-                </Avatar>
+                <div className="h-14 w-14 bg-primary text-primary-foreground shrink-0 rounded-full flex items-center justify-center">
+                  <span className="text-lg font-semibold">{owner.initials}</span>
+                </div>
 
                 <div className="space-y-2 flex-1 min-w-0">
                   <div>
