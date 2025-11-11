@@ -52,14 +52,21 @@ export function CTA() {
 
     debounceRef.current = setTimeout(async () => {
       try {
+        setLoading(true)
         const response = await fetch(`/api/properties/autocomplete?q=${encodeURIComponent(searchQuery)}`)
         const data = await response.json()
         if (response.ok) {
           setSuggestions(data.suggestions || [])
           setShowSuggestions(data.suggestions && data.suggestions.length > 0)
+        } else {
+          console.error('API error:', data)
         }
       } catch (error) {
         console.error('Error fetching suggestions:', error)
+        setSuggestions([])
+        setShowSuggestions(false)
+      } finally {
+        setLoading(false)
       }
     }, 300) // 300ms debounce
 

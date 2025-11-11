@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Search properties by address, city, or zip code
+    // SQLite doesn't support case-insensitive search natively, so we use toLowerCase
+    const queryLower = query.toLowerCase()
     const properties = await prisma.property.findMany({
       where: {
         OR: [
