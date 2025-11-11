@@ -21,4 +21,3 @@ export interface PropertyDetails {
   yearBuilt?: number | null
   propertyType?: string | null
 }
-

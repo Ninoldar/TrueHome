@@ -51,13 +51,13 @@
 - Color-coded risk levels (Green/Yellow/Red)
 
 **Implementation:**
-```typescript
+\`\`\`typescript
 // Risk factors
 - High claim frequency = higher risk
 - Recent major repairs = potential issues
 - Long rental history = more wear
 - Old systems = replacement risk
-```
+\`\`\`
 
 ### 2. **Comparable Properties (Comps)** ⭐⭐⭐
 **Carfax Equivalent:** Market value estimates
@@ -346,4 +346,3 @@
 10. Advanced analytics
 11. API integrations
 12. Mobile optimization
-

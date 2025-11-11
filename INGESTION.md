@@ -27,7 +27,7 @@ This document outlines how to ingest property data into TrueHome.
 
 Use the ingestion API endpoints:
 
-```bash
+\`\`\`bash
 # Ingest a property
 curl -X POST http://localhost:4000/ingestion/property \
   -H "Content-Type: application/json" \
@@ -76,13 +76,13 @@ curl -X POST http://localhost:4000/ingestion/permit \
     },
     "source": "plano_permits"
   }'
-```
+\`\`\`
 
 ### 2. Batch Ingestion Scripts
 
 Create scripts in `apps/api/src/ingestion/scripts/` for batch processing:
 
-```typescript
+\`\`\`typescript
 // Example: scripts/ingest-collin-cad.ts
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../../app.module';
@@ -99,13 +99,13 @@ async function main() {
 }
 
 main();
-```
+\`\`\`
 
 ### 3. Scheduled Jobs
 
 Use NestJS schedulers or external job queues (BullMQ) for periodic ingestion:
 
-```typescript
+\`\`\`typescript
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
@@ -116,7 +116,7 @@ export class ScheduledIngestion {
     // Fetch and ingest new data
   }
 }
-```
+\`\`\`
 
 ## Data Quality
 
@@ -133,4 +133,3 @@ export class ScheduledIngestion {
 3. Set up scheduled ingestion jobs
 4. Add data validation and error handling
 5. Monitor ingestion success/failure rates
-

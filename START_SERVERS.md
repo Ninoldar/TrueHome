@@ -15,22 +15,22 @@
 - Wait until it shows "Docker is running" in the menu bar
 
 **Verify Docker is running:**
-```bash
+\`\`\`bash
 docker ps
-```
+\`\`\`
 
 ### 2. Start Docker Services
 
-```bash
+\`\`\`bash
 cd /Users/jonathanguyen/truehome
 npm run docker:up
-```
+\`\`\`
 
 Wait ~30 seconds for PostgreSQL to be ready.
 
 ### 3. Set Up Database
 
-```bash
+\`\`\`bash
 # Generate Prisma client
 npm run db:generate
 
@@ -39,31 +39,31 @@ npm run db:migrate
 
 # Seed sample data
 npm run db:seed
-```
+\`\`\`
 
 ### 4. Start API Server (Terminal 1)
 
-```bash
+\`\`\`bash
 cd /Users/jonathanguyen/truehome/apps/api
 npm run dev
-```
+\`\`\`
 
 You should see:
-```
+\`\`\`
 🚀 API server running on http://localhost:4000
-```
+\`\`\`
 
 ### 5. Start Web Server (Terminal 2)
 
-```bash
+\`\`\`bash
 cd /Users/jonathanguyen/truehome/apps/web
 npm run dev
-```
+\`\`\`
 
 You should see:
-```
+\`\`\`
 - Local:        http://localhost:3000
-```
+\`\`\`
 
 ### 6. Open Browser
 
@@ -80,11 +80,11 @@ Once both servers are running, try searching for:
 ## Troubleshooting
 
 **Port already in use?**
-```bash
+\`\`\`bash
 # Kill processes on ports
 lsof -ti :3000 | xargs kill -9
 lsof -ti :4000 | xargs kill -9
-```
+\`\`\`
 
 **Database connection error?**
 - Make sure Docker Desktop is running
@@ -99,17 +99,16 @@ lsof -ti :4000 | xargs kill -9
 
 If you want to start everything at once (after Docker is running):
 
-```bash
+\`\`\`bash
 cd /Users/jonathanguyen/truehome
 ./setup-mvp.sh
-```
+\`\`\`
 
 Then in separate terminals:
-```bash
+\`\`\`bash
 # Terminal 1
 cd apps/api && npm run dev
 
 # Terminal 2  
 cd apps/web && npm run dev
-```
-
+\`\`\`

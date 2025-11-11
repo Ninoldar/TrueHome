@@ -51,4 +51,3 @@ export class PropertiesController {
     return this.propertiesService.getComparables(id, radiusMiles);
   }
 }
-

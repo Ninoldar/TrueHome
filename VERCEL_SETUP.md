@@ -30,17 +30,17 @@
 
 3. **Environment Variables**
    Add these in Vercel project settings:
-   ```
+   \`\`\`
    DATABASE_URL=your_production_database_url
    NEXT_PUBLIC_API_URL=https://your-api-url.railway.app
-   ```
+   \`\`\`
    
    **OR** if deploying API separately:
-   ```
+   \`\`\`
    DATABASE_URL=your_production_database_url
    NEXT_PUBLIC_API_URL=/api
    API_URL=https://your-api-url.railway.app
-   ```
+   \`\`\`
 
 4. **Deploy**
    - Click "Deploy"
@@ -59,11 +59,11 @@ Since Vercel is primarily for frontend, deploy the API separately:
    - **Build Command:** `cd ../.. && npm install && npm run build`
    - **Start Command:** `cd apps/api && npm run start`
 5. Add Environment Variables:
-   ```
+   \`\`\`
    DATABASE_URL=your_production_database_url
    PORT=4000
    FRONTEND_URL=https://your-vercel-app.vercel.app
-   ```
+   \`\`\`
 6. Get the Railway URL and update `NEXT_PUBLIC_API_URL` in Vercel
 
 #### Option B: Render.com (Free Tier)
@@ -97,7 +97,7 @@ Since Vercel is primarily for frontend, deploy the API separately:
 
 ### Step 4: Run Database Migrations
 
-```bash
+\`\`\`bash
 # Set production DATABASE_URL
 export DATABASE_URL="your_production_database_url"
 
@@ -109,7 +109,7 @@ cd packages/db && npx prisma migrate deploy
 
 # (Optional) Seed sample data
 cd apps/api && DATABASE_URL="your_production_database_url" npm run db:seed
-```
+\`\`\`
 
 ## 🔧 Configuration Details
 
@@ -157,9 +157,9 @@ The `next.config.js` is configured to:
 ## 📝 Recommended Build Command
 
 For Vercel, use:
-```bash
+\`\`\`bash
 cd ../.. && npm install && cd packages/db && npx prisma generate && cd ../../apps/web && npm run build
-```
+\`\`\`
 
 Or update `package.json` scripts to handle this.
 
@@ -188,4 +188,3 @@ Or update `package.json` scripts to handle this.
 - [ ] Database created and migrations run
 - [ ] CORS configured in API
 - [ ] Test deployment
-

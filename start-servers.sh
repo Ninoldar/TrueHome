@@ -52,4 +52,3 @@ if curl -s http://localhost:4000/search/autocomplete?q=Main > /dev/null 2>&1; th
 else
   echo "⏳ API still starting (check logs if issues persist)"
 fi
-

@@ -27,4 +27,3 @@ else
     echo ""
     echo "Or provide the GitHub URL and I can help set it up!"
 fi
-

@@ -11,7 +11,7 @@ V0 is Vercel's AI-powered UI component generator. You can create beautiful landi
 1. Go to https://v0.dev
 2. Sign in with your Vercel account
 3. Describe your landing page, for example:
-   ```
+   \`\`\`
    Create a modern landing page for TrueHome - a property history report service.
    Include:
    - Hero section with headline "Carfax for Homes"
@@ -19,7 +19,7 @@ V0 is Vercel's AI-powered UI component generator. You can create beautiful landi
    - Features section (Ownership History, Permits, Risk Assessment)
    - How it works section
    - Call to action
-   ```
+   \`\`\`
 4. V0 will generate React/Next.js code
 5. Click "Copy Code" to get the component
 
@@ -44,17 +44,17 @@ V0 is Vercel's AI-powered UI component generator. You can create beautiful landi
 
 The V0 landing page will have its own search UI. You need to connect it to your `PropertySearch` component:
 
-```tsx
+\`\`\`tsx
 // In your V0 landing page component
 import PropertySearch from '../components/PropertySearch'
 
 // Replace V0's search input with:
 <PropertySearch />
-```
+\`\`\`
 
 Or if V0 generates a custom search, you can wrap it:
 
-```tsx
+\`\`\`tsx
 // V0 might generate something like:
 <div className="search-container">
   <input type="text" placeholder="Search properties..." />
@@ -64,7 +64,7 @@ Or if V0 generates a custom search, you can wrap it:
 <div className="search-container">
   <PropertySearch />
 </div>
-```
+\`\`\`
 
 ### Step 4: Style Integration
 
@@ -80,7 +80,7 @@ V0 uses Tailwind CSS (which you already have). Make sure:
 1. **Generate in V0**: Create your landing page
 2. **Copy Code**: Get the React component code
 3. **Update page.tsx**:
-   ```tsx
+   \`\`\`tsx
    // apps/web/src/app/page.tsx
    import PropertySearch from '../components/PropertySearch'
    
@@ -92,12 +92,12 @@ V0 uses Tailwind CSS (which you already have). Make sure:
        </V0GeneratedComponent>
      )
    }
-   ```
+   \`\`\`
 
 ### Method 2: Component Wrapper
 
 1. **Create V0 Component File**:
-   ```tsx
+   \`\`\`tsx
    // apps/web/src/components/V0Landing.tsx
    'use client'
    
@@ -107,10 +107,10 @@ V0 uses Tailwind CSS (which you already have). Make sure:
        // V0 generated JSX
      )
    }
-   ```
+   \`\`\`
 
 2. **Use in page.tsx**:
-   ```tsx
+   \`\`\`tsx
    // apps/web/src/app/page.tsx
    import V0Landing from '../components/V0Landing'
    import PropertySearch from '../components/PropertySearch'
@@ -118,7 +118,7 @@ V0 uses Tailwind CSS (which you already have). Make sure:
    export default function Home() {
      return <V0Landing />
    }
-   ```
+   \`\`\`
 
 3. **Replace Search in V0 Component**: Find the search input in V0 code and replace with `<PropertySearch />`
 
@@ -126,7 +126,7 @@ V0 uses Tailwind CSS (which you already have). Make sure:
 
 Here's what a typical V0 landing page might look like:
 
-```tsx
+\`\`\`tsx
 'use client'
 
 import PropertySearch from '../components/PropertySearch'
@@ -153,7 +153,7 @@ export default function LandingPage() {
     </div>
   )
 }
-```
+\`\`\`
 
 ## Tips for V0 Integration
 
@@ -188,7 +188,7 @@ You can generate each section separately in V0 and combine them.
 
 Try this prompt in V0:
 
-```
+\`\`\`
 Create a modern, professional landing page for TrueHome - a property history report service like Carfax for homes.
 
 Requirements:
@@ -200,7 +200,6 @@ Requirements:
 - Fully responsive
 - Use Tailwind CSS
 - Next.js 14 App Router compatible
-```
+\`\`\`
 
 Then replace the search input with your `<PropertySearch />` component.
-

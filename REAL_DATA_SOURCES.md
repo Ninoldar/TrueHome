@@ -165,7 +165,7 @@ This guide covers how to pull real property information for TrueHome.
 
 Here's how to implement PropertyRadar API integration:
 
-```typescript
+\`\`\`typescript
 // apps/api/src/ingestion/sources/propertyradar.ingester.ts
 import { Injectable } from '@nestjs/common';
 import { IngestionService } from '../ingestion.service';
@@ -207,7 +207,7 @@ export class PropertyRadarIngester {
     };
   }
 }
-```
+\`\`\`
 
 ## 🎯 Recommended Approach for MVP
 
@@ -252,4 +252,3 @@ export class PropertyRadarIngester {
 4. Test with real addresses
 5. Set up scheduled ingestion jobs
 6. Monitor data quality
-

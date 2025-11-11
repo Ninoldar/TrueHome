@@ -203,4 +203,3 @@ export default function PropertySearch() {
     </div>
   )
 }
-

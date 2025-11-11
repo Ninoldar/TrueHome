@@ -12,24 +12,24 @@ Get the TrueHome MVP running in 5 minutes!
 
 ### 1. Install Dependencies (2 minutes)
 
-```bash
+\`\`\`bash
 npm install
-```
+\`\`\`
 
 ### 2. Start Infrastructure (1 minute)
 
-```bash
+\`\`\`bash
 npm run docker:up
-```
+\`\`\`
 
 Wait ~30 seconds for services to start. Check with:
-```bash
+\`\`\`bash
 docker ps
-```
+\`\`\`
 
 ### 3. Set Up Database (1 minute)
 
-```bash
+\`\`\`bash
 # Generate Prisma client
 npm run db:generate
 
@@ -38,10 +38,10 @@ npm run db:migrate
 
 # Seed sample data
 npm run db:seed
-```
+\`\`\`
 
 You should see:
-```
+\`\`\`
 🎉 Data seeding completed successfully!
 📊 Summary:
 {
@@ -53,21 +53,21 @@ You should see:
   "rentalSignals": 2,
   "insuranceClaims": 4
 }
-```
+\`\`\`
 
 ### 4. Start Servers (1 minute)
 
 **Terminal 1 - API:**
-```bash
+\`\`\`bash
 cd apps/api
 npm run dev
-```
+\`\`\`
 
 **Terminal 2 - Web:**
-```bash
+\`\`\`bash
 cd apps/web
 npm run dev
-```
+\`\`\`
 
 ### 5. Open Browser
 
@@ -93,21 +93,21 @@ Visit: **http://localhost:3000**
 - Change web port: Edit `apps/web/package.json` → `"dev": "next dev -p 3001"`
 
 **Database connection error?**
-```bash
+\`\`\`bash
 # Check Docker is running
 docker ps
 
 # Restart services
 npm run docker:down
 npm run docker:up
-```
+\`\`\`
 
 **Prisma errors?**
-```bash
+\`\`\`bash
 cd packages/db
 npm install
 npm run generate
-```
+\`\`\`
 
 ## What's Next?
 
@@ -118,4 +118,3 @@ npm run generate
 ---
 
 **That's it!** You now have a working MVP with 5 properties and rich history data. 🎉
-

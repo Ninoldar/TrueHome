@@ -54,4 +54,3 @@ echo "  Terminal 1: cd apps/api && npm run dev"
 echo "  Terminal 2: cd apps/web && npm run dev"
 echo ""
 echo "Then visit: http://localhost:3000"
-

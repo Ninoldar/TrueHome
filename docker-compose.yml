@@ -72,4 +72,3 @@ volumes:
   redis_data:
   opensearch_data:
   minio_data:
-

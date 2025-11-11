@@ -282,4 +282,3 @@ export class WebScraperIngester {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
-

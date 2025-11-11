@@ -7,7 +7,7 @@
 - Sign in with Vercel account
 - Use this prompt:
 
-```
+\`\`\`
 Create a modern landing page for TrueHome property history service.
 
 Hero section with:
@@ -25,7 +25,7 @@ Modern, clean, professional design.
 Fully responsive.
 Tailwind CSS.
 Next.js 14 App Router.
-```
+\`\`\`
 
 ### 2. Copy V0 Code
 - Click "Copy Code" in V0
@@ -34,7 +34,7 @@ Next.js 14 App Router.
 ### 3. Replace Landing Page
 
 **Option A: Direct Replace**
-```bash
+\`\`\`bash
 # Edit apps/web/src/app/page.tsx
 # Paste V0 code
 # Find the search input and replace with:
@@ -42,36 +42,36 @@ import PropertySearch from '../components/PropertySearch'
 
 // In the V0 JSX, replace search input with:
 <PropertySearch />
-```
+\`\`\`
 
 **Option B: Use Template**
-```bash
+\`\`\`bash
 # Edit apps/web/src/components/V0LandingTemplate.tsx
 # Paste V0 code
 # Keep the PropertySearch import and usage
-```
+\`\`\`
 
 ### 4. Test Locally
-```bash
+\`\`\`bash
 cd apps/web
 npm run dev
 # Visit http://localhost:3000
-```
+\`\`\`
 
 ### 5. Deploy
-```bash
+\`\`\`bash
 git add .
 git commit -m "feat: Add V0 landing page"
 git push origin main
 # Vercel will auto-deploy
-```
+\`\`\`
 
 ## 🔗 Key Integration Points
 
 ### Keep PropertySearch Component
 Your V0 landing page will have a search input. Replace it with:
 
-```tsx
+\`\`\`tsx
 import PropertySearch from '../components/PropertySearch'
 
 // In V0 JSX, replace:
@@ -79,7 +79,7 @@ import PropertySearch from '../components/PropertySearch'
 
 // With:
 <PropertySearch />
-```
+\`\`\`
 
 ### Maintain Routing
 V0 code should work with Next.js routing. Your property detail pages at `/property/[id]` will still work.
@@ -92,19 +92,19 @@ V0 might use different colors. Update to match your `primary` colors in `tailwin
 ## 📝 Example V0 Prompt Variations
 
 **Minimal Landing:**
-```
+\`\`\`
 Simple hero section with TrueHome branding and search bar placeholder.
-```
+\`\`\`
 
 **Full Landing:**
-```
+\`\`\`
 Complete landing page with hero, features, how it works, testimonials, and CTA sections.
-```
+\`\`\`
 
 **Modern Design:**
-```
+\`\`\`
 Ultra-modern landing page with glassmorphism effects, gradients, and smooth animations.
-```
+\`\`\`
 
 ## ✅ Checklist
 
@@ -141,4 +141,3 @@ If V0 uses custom classes, add them to `tailwind.config.ts`.
 - V0 might use different color values
 - Update to match your `primary` color scheme
 - Check responsive breakpoints
-

@@ -16,4 +16,3 @@ import { WebScraperIngester } from './sources/web-scraper.ingester';
   exports: [IngestionService],
 })
 export class IngestionModule {}
-
