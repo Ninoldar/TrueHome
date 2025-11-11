@@ -115,6 +115,12 @@ async function seedSampleData() {
           workDate: new Date('2022-05-20'),
           cost: 8500,
           contractorName: 'Comfort Air Solutions',
+          contractorPhone: '(972) 555-0101',
+          contractorEmail: 'info@comfortair.com',
+          contractorWebsite: 'https://comfortair.com',
+          warrantyPeriodMonths: 60, // 5 year warranty
+          warrantyType: 'Full System',
+          warrantyDetails: 'Covers parts and labor for entire HVAC system',
         },
         {
           workType: 'Plumbing',
@@ -122,6 +128,10 @@ async function seedSampleData() {
           workDate: new Date('2021-11-10'),
           cost: 1200,
           contractorName: 'Plano Plumbing',
+          contractorPhone: '(972) 555-0102',
+          warrantyPeriodMonths: 12, // 1 year warranty
+          warrantyType: 'Labor',
+          warrantyDetails: '1 year labor warranty on installation',
         },
       ],
       rentalSignals: [
@@ -138,6 +148,9 @@ async function seedSampleData() {
           claimDate: new Date('2022-08-15'),
           amount: 15000,
           status: 'Paid',
+          contractorName: 'Restoration Experts LLC',
+          contractorPhone: '(972) 555-0103',
+          workDescription: 'Water damage restoration and repair work',
         },
       ],
     },
@@ -216,6 +229,10 @@ async function seedSampleData() {
           workDate: new Date('2020-04-15'),
           cost: 12000,
           contractorName: 'Frisco Landscaping',
+          contractorPhone: '(972) 555-0104',
+          warrantyPeriodMonths: 24, // 2 year warranty
+          warrantyType: 'Materials & Installation',
+          warrantyDetails: '2 year warranty on plants and irrigation system',
         },
       ],
       rentalSignals: [],
@@ -321,6 +338,10 @@ async function seedSampleData() {
           workDate: new Date('2016-05-15'),
           cost: 8500,
           contractorName: 'Storm Damage Roofing',
+          contractorPhone: '(972) 555-0105',
+          warrantyPeriodMonths: 120, // 10 year warranty (expired)
+          warrantyType: 'Materials',
+          warrantyDetails: '10 year material warranty on shingles',
         },
         {
           workType: 'HVAC',
@@ -328,6 +349,10 @@ async function seedSampleData() {
           workDate: new Date('2017-07-10'),
           cost: 6200,
           contractorName: 'Cool Air Systems',
+          contractorPhone: '(972) 555-0106',
+          warrantyPeriodMonths: 60, // 5 year warranty (expired)
+          warrantyType: 'Full System',
+          warrantyDetails: '5 year warranty on parts and labor',
         },
       ],
       rentalSignals: [
@@ -344,12 +369,18 @@ async function seedSampleData() {
           claimDate: new Date('2016-05-10'),
           amount: 12000,
           status: 'Paid',
+          contractorName: 'Storm Damage Roofing',
+          contractorPhone: '(972) 555-0105',
+          workDescription: 'Roof repair and replacement due to hail damage',
         },
         {
           claimType: 'Water Damage',
           claimDate: new Date('2020-02-05'),
           amount: 8500,
           status: 'Paid',
+          contractorName: 'Water Damage Specialists',
+          contractorPhone: '(972) 555-0107',
+          workDescription: 'Water damage restoration and mold remediation',
         },
       ],
     },
@@ -491,6 +522,12 @@ async function seedSampleData() {
           workDate: new Date('2022-03-01'),
           cost: 15000,
           contractorName: 'Tech Home Solutions',
+          contractorPhone: '(972) 555-0108',
+          contractorEmail: 'info@techhomesolutions.com',
+          contractorWebsite: 'https://techhomesolutions.com',
+          warrantyPeriodMonths: 36, // 3 year warranty
+          warrantyType: 'Parts & Labor',
+          warrantyDetails: '3 year warranty on all smart home components and installation',
         },
         {
           workType: 'Plumbing',
@@ -498,6 +535,10 @@ async function seedSampleData() {
           workDate: new Date('2021-08-10'),
           cost: 3500,
           contractorName: 'Richardson Plumbing',
+          contractorPhone: '(972) 555-0109',
+          warrantyPeriodMonths: 12, // 1 year warranty (expired)
+          warrantyType: 'Labor',
+          warrantyDetails: '1 year warranty on installation work',
         },
       ],
       rentalSignals: [],
@@ -507,6 +548,9 @@ async function seedSampleData() {
           claimDate: new Date('2019-12-10'),
           amount: 25000,
           status: 'Paid',
+          contractorName: 'Fire Restoration Pro',
+          contractorPhone: '(972) 555-0110',
+          workDescription: 'Fire damage restoration, smoke remediation, and structural repairs',
         },
       ],
     },
@@ -566,9 +610,20 @@ async function seedSampleData() {
                 name: workEvent.contractorName,
                 state: 'TX',
                 verificationStatus: 'verified',
+                phone: (workEvent as any).contractorPhone,
+                email: (workEvent as any).contractorEmail,
+                website: (workEvent as any).contractorWebsite,
               },
             });
           }
+        }
+
+        // Calculate warranty expiration if period provided
+        let warrantyExpirationDate = null;
+        if ((workEvent as any).warrantyPeriodMonths && workEvent.workDate) {
+          const workDate = new Date(workEvent.workDate);
+          warrantyExpirationDate = new Date(workDate);
+          warrantyExpirationDate.setMonth(warrantyExpirationDate.getMonth() + (workEvent as any).warrantyPeriodMonths);
         }
 
         await prisma.workEvent.create({
@@ -579,6 +634,10 @@ async function seedSampleData() {
             description: workEvent.description,
             workDate: workEvent.workDate,
             cost: workEvent.cost,
+            warrantyPeriodMonths: (workEvent as any).warrantyPeriodMonths,
+            warrantyExpirationDate,
+            warrantyType: (workEvent as any).warrantyType,
+            warrantyDetails: (workEvent as any).warrantyDetails,
             verificationStatus: 'verified',
           },
         });
@@ -597,8 +656,26 @@ async function seedSampleData() {
         });
       }
 
-      // Ingest insurance claims
+      // Ingest insurance claims (need to create contractors first)
       for (const claim of propertyData.insuranceClaims) {
+        let contractor = null;
+        if ((claim as any).contractorName) {
+          contractor = await prisma.contractorCompany.findFirst({
+            where: { name: (claim as any).contractorName },
+          });
+          
+          if (!contractor) {
+            contractor = await prisma.contractorCompany.create({
+              data: {
+                name: (claim as any).contractorName,
+                state: 'TX',
+                verificationStatus: 'verified',
+                phone: (claim as any).contractorPhone,
+              },
+            });
+          }
+        }
+
         await prisma.insuranceClaim.create({
           data: {
             propertyId: property.id,
@@ -606,6 +683,8 @@ async function seedSampleData() {
             claimDate: claim.claimDate,
             amount: claim.amount,
             status: claim.status,
+            contractorId: contractor?.id,
+            workDescription: (claim as any).workDescription,
             verificationStatus: 'verified',
           },
         });

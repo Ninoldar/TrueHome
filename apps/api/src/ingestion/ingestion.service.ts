@@ -183,5 +183,128 @@ export class IngestionService {
       },
     });
   }
+
+  /**
+   * Ingest work event with warranty information
+   */
+  async ingestWorkEvent(
+    propertyId: string,
+    data: {
+      workType: string;
+      description?: string;
+      workDate: Date;
+      cost?: number;
+      invoiceNumber?: string;
+      contractorName?: string;
+      contractorId?: string;
+      warrantyPeriodMonths?: number;
+      warrantyType?: string;
+      warrantyDetails?: string;
+      insuranceClaimId?: string;
+    },
+    source: string
+  ) {
+    let contractor = null;
+    
+    // Find or create contractor
+    if (data.contractorId) {
+      contractor = await prisma.contractorCompany.findUnique({
+        where: { id: data.contractorId },
+      });
+    } else if (data.contractorName) {
+      contractor = await prisma.contractorCompany.findFirst({
+        where: { name: data.contractorName },
+      });
+      
+      if (!contractor) {
+        contractor = await prisma.contractorCompany.create({
+          data: {
+            name: data.contractorName,
+            state: 'TX',
+            verificationStatus: 'pending',
+          },
+        });
+      }
+    }
+
+    // Calculate warranty expiration if period is provided
+    let warrantyExpirationDate = null;
+    if (data.warrantyPeriodMonths && data.workDate) {
+      const workDate = new Date(data.workDate);
+      warrantyExpirationDate = new Date(workDate);
+      warrantyExpirationDate.setMonth(warrantyExpirationDate.getMonth() + data.warrantyPeriodMonths);
+    }
+
+    return prisma.workEvent.create({
+      data: {
+        propertyId,
+        contractorId: contractor?.id,
+        workType: data.workType,
+        description: data.description,
+        workDate: data.workDate,
+        cost: data.cost,
+        invoiceNumber: data.invoiceNumber,
+        warrantyPeriodMonths: data.warrantyPeriodMonths,
+        warrantyExpirationDate,
+        warrantyType: data.warrantyType,
+        warrantyDetails: data.warrantyDetails,
+        insuranceClaimId: data.insuranceClaimId,
+        verificationStatus: 'pending',
+      },
+    });
+  }
+
+  /**
+   * Ingest insurance claim with contractor link
+   */
+  async ingestInsuranceClaim(
+    propertyId: string,
+    data: {
+      claimType: string;
+      claimDate: Date;
+      amount?: number;
+      status?: string;
+      contractorName?: string;
+      contractorId?: string;
+      workDescription?: string;
+    },
+    source: string
+  ) {
+    let contractor = null;
+    
+    // Find or create contractor if provided
+    if (data.contractorId) {
+      contractor = await prisma.contractorCompany.findUnique({
+        where: { id: data.contractorId },
+      });
+    } else if (data.contractorName) {
+      contractor = await prisma.contractorCompany.findFirst({
+        where: { name: data.contractorName },
+      });
+      
+      if (!contractor) {
+        contractor = await prisma.contractorCompany.create({
+          data: {
+            name: data.contractorName,
+            state: 'TX',
+            verificationStatus: 'pending',
+          },
+        });
+      }
+    }
+
+    return prisma.insuranceClaim.create({
+      data: {
+        propertyId,
+        claimType: data.claimType,
+        claimDate: data.claimDate,
+        amount: data.amount,
+        status: data.status,
+        contractorId: contractor?.id,
+        workDescription: data.workDescription,
+        verificationStatus: 'pending',
+      },
+    });
+  }
 }
 

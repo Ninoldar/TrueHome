@@ -34,5 +34,21 @@ export class PropertiesController {
   async getPropertyWorkEvents(@Param('id') id: string) {
     return this.propertiesService.getWorkEvents(id);
   }
+
+  @Get(':id/risk-assessment')
+  async getRiskAssessment(@Param('id') id: string) {
+    return this.propertiesService.getRiskAssessment(id);
+  }
+
+  @Get(':id/timeline')
+  async getTimeline(@Param('id') id: string) {
+    return this.propertiesService.getTimeline(id);
+  }
+
+  @Get(':id/comparables')
+  async getComparables(@Param('id') id: string, @Query('radius') radius?: string) {
+    const radiusMiles = radius ? parseFloat(radius) : 1;
+    return this.propertiesService.getComparables(id, radiusMiles);
+  }
 }
 

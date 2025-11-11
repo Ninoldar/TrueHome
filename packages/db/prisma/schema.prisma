@@ -22,7 +22,7 @@ model Property {
   county        String   @default("Collin")
   latitude      Float?
   longitude     Float?
-  geometry      Unsupported("geometry(Point,4326)")? // PostGIS point
+  // geometry      Unsupported("geometry(Point,4326)")? // PostGIS point - disabled for local setup
   
   // Property Details
   lotSize       Float?   // in square feet
@@ -151,8 +151,12 @@ model ContractorCompany {
   phone             String?
   email             String?
   website           String?
+  address           String?  // Business address
+  rating            Float?   // Average rating (1-5)
+  totalJobs         Int      @default(0) // Total jobs completed
   
   workEvents        WorkEvent[]
+  insuranceClaims   InsuranceClaim[] // Claims where this contractor did work
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -175,8 +179,18 @@ model WorkEvent {
   documentUrl     String?  // S3 URL to invoice/receipt
   verificationStatus String @default("pending") // "pending", "verified", "rejected"
   
+  // Warranty Information
+  warrantyPeriodMonths Int?     // Warranty period in months
+  warrantyExpirationDate DateTime? // When warranty expires
+  warrantyType    String?  // "Labor", "Parts", "Full", "Manufacturer", etc.
+  warrantyDetails String?  // Additional warranty information
+  
+  // Insurance Claim Link
+  insuranceClaimId String?  // Link to insurance claim if work was claim-related
+  
   property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   contractor      ContractorCompany? @relation(fields: [contractorId], references: [id])
+  insuranceClaim InsuranceClaim? @relation(fields: [insuranceClaimId], references: [id])
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -184,6 +198,8 @@ model WorkEvent {
   @@index([propertyId])
   @@index([contractorId])
   @@index([workType])
+  @@index([insuranceClaimId])
+  @@index([warrantyExpirationDate])
   @@map("work_events")
 }
 
@@ -218,13 +234,20 @@ model InsuranceClaim {
   verificationStatus String  @default("pending") // "pending", "verified", "rejected"
   documentUrl       String?  // S3 URL to claim document
   
+  // Contractor Information (if work was done)
+  contractorId      String?  // Contractor who performed the work
+  workDescription   String?  // Description of work performed for this claim
+  
   property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contractor        ContractorCompany? @relation(fields: [contractorId], references: [id])
+  workEvents        WorkEvent[] // Work events related to this claim
   
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   
   @@index([propertyId])
   @@index([claimType])
+  @@index([contractorId])
   @@map("insurance_claims")
 }
 
