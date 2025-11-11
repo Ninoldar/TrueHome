@@ -36,7 +36,16 @@ export async function POST(request: NextRequest) {
     }
 
     const property = await prisma.property.create({
-      data: validatedData,
+      data: {
+        address: validatedData.address,
+        city: validatedData.city,
+        state: validatedData.state,
+        zipCode: validatedData.zipCode,
+        propertyType: validatedData.propertyType || 'Unknown',
+        ...(validatedData.yearBuilt !== undefined && { yearBuilt: validatedData.yearBuilt }),
+        ...(validatedData.squareFeet !== undefined && { squareFeet: validatedData.squareFeet }),
+        ...(validatedData.lotSize !== undefined && { lotSize: validatedData.lotSize }),
+      },
     })
 
     return NextResponse.json({ property }, { status: 201 })
