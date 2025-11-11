@@ -24,9 +24,9 @@ Vercel should auto-detect these, but verify:
 
 Add in Vercel Dashboard → Settings → Environment Variables:
 
-```
+\`\`\`
 DATABASE_URL=your_production_database_url
-```
+\`\`\`
 
 ## Build Process
 
