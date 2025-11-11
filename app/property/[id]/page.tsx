@@ -63,12 +63,15 @@ export default function PropertyPage() {
         return
       }
       try {
+        console.log('Fetching property with ID:', propertyId)
         const response = await fetch(`/api/properties/${propertyId}`)
         const data = await response.json()
+        console.log('API Response:', { status: response.status, ok: response.ok, hasProperty: !!data.property })
+        
         if (response.ok && data.property) {
           setProperty(data.property)
         } else {
-          console.error('Property not found:', data.error)
+          console.error('Property not found:', data.error, 'Property ID:', propertyId, 'Response:', data)
         }
       } catch (error) {
         console.error('Error fetching property:', error)
