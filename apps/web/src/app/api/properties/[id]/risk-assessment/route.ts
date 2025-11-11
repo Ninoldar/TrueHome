@@ -95,11 +95,11 @@ export async function GET(
     const factors = []
 
     if (property.insuranceClaims.length > 0) {
+      type InsuranceClaimDetail = { claimType: string; claimDate: Date; amount: number | null }
       factors.push({
         type: 'insurance_claims',
         severity: property.insuranceClaims.length > 2 ? 'high' : 'medium',
         message: `${property.insuranceClaims.length} insurance claim${property.insuranceClaims.length !== 1 ? 's' : ''} on record`,
-        type InsuranceClaimDetail = { claimType: string; claimDate: Date; amount: number | null }
         details: property.insuranceClaims.map((c: InsuranceClaimDetail) => ({
           type: c.claimType,
           date: c.claimDate,
