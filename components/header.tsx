@@ -27,12 +27,18 @@ export function Header() {
           </button>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <button
+              onClick={() => router.push('/features')}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Features
-            </a>
-            <a href="#benefits" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            </button>
+            <button
+              onClick={() => router.push('/benefits')}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Benefits
-            </a>
+            </button>
             <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </a>
