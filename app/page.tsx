@@ -132,7 +132,7 @@ export default function Home() {
               TrueHome
             </h1>
             <p className="text-2xl text-gray-600 mb-2">
-              Know Your Home's Complete History
+              Know Your Home&apos;s Complete History
             </p>
             <p className="text-lg text-gray-500">
               Complete property history reports for buyers and realtors

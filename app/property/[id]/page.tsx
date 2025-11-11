@@ -55,22 +55,21 @@ export default function PropertyPage() {
   const [reportId, setReportId] = useState<string | null>(null)
 
   useEffect(() => {
+    const fetchProperty = async () => {
+      try {
+        const response = await fetch(`/api/properties/${params.id}`)
+        const data = await response.json()
+        if (response.ok) {
+          setProperty(data.property)
+        }
+      } catch (error) {
+        console.error('Error fetching property:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchProperty()
   }, [params.id])
-
-  const fetchProperty = async () => {
-    try {
-      const response = await fetch(`/api/properties/${params.id}`)
-      const data = await response.json()
-      if (response.ok) {
-        setProperty(data.property)
-      }
-    } catch (error) {
-      console.error('Error fetching property:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleGenerateReport = async () => {
     setGeneratingReport(true)
