@@ -1,0 +1,283 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Core Property Model
+model Property {
+  id            String   @id @default(cuid())
+  apn           String?  @unique // Assessor's Parcel Number
+  address       String
+  addressLine2  String?
+  city          String
+  state         String   @default("TX")
+  zipCode       String
+  county        String   @default("Collin")
+  latitude      Float?
+  longitude     Float?
+  geometry      Unsupported("geometry(Point,4326)")? // PostGIS point
+  
+  // Property Details
+  lotSize       Float?   // in square feet
+  livingArea    Float?   // in square feet
+  bedrooms      Int?
+  bathrooms     Float?
+  yearBuilt     Int?
+  propertyType  String?  // Single Family, Condo, Townhouse, etc.
+  
+  // Metadata
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relations
+  sourceRecords     SourceRecord[]
+  ownershipEvents   OwnershipEvent[]
+  sales             Sale[]
+  permits           Permit[]
+  workEvents        WorkEvent[]
+  rentalSignals     RentalSignal[]
+  insuranceClaims   InsuranceClaim[]
+  reports           Report[]
+  notifications     NotificationSubscription[]
+  
+  @@index([apn])
+  @@index([address, city, zipCode])
+  @@index([latitude, longitude])
+  @@map("properties")
+}
+
+// Source Record Tracking
+model SourceRecord {
+  id          String   @id @default(cuid())
+  propertyId  String
+  source      String   // "collin_cad", "city_permits", "county_records", etc.
+  sourceId    String?  // External ID from source
+  rawPayload  Json?    // Raw data from source
+  ingestedAt  DateTime @default(now())
+  version     Int      @default(1)
+  
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  @@index([propertyId])
+  @@index([source, sourceId])
+  @@map("source_records")
+}
+
+// Ownership History
+model OwnershipEvent {
+  id          String   @id @default(cuid())
+  propertyId  String
+  ownerName   String
+  ownerType   String?  // "Individual", "LLC", "Trust", etc.
+  fromDate    DateTime
+  toDate      DateTime?
+  isCurrent   Boolean  @default(false)
+  documentRef String?  // Reference to deed document
+  source      String   // Source of this record
+  
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([propertyId])
+  @@index([ownerName])
+  @@map("ownership_events")
+}
+
+// Sales History
+model Sale {
+  id          String   @id @default(cuid())
+  propertyId  String
+  saleDate    DateTime
+  salePrice   Float
+  saleType    String?  // "Arm's Length", "Non-Arm's Length", etc.
+  buyerName   String?
+  sellerName  String?
+  documentRef String?  // Reference to deed document
+  source      String
+  
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([propertyId])
+  @@index([saleDate])
+  @@map("sales")
+}
+
+// Building Permits
+model Permit {
+  id            String   @id @default(cuid())
+  propertyId    String
+  permitNumber  String
+  permitType    String   // "Building", "Electrical", "Plumbing", "Roofing", etc.
+  status        String   // "Issued", "Completed", "Expired", etc.
+  issuedDate    DateTime?
+  completedDate DateTime?
+  expirationDate DateTime?
+  description   String?
+  contractorName String?
+  jurisdiction  String   // City or county
+  source        String
+  
+  property      Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([propertyId])
+  @@index([permitNumber])
+  @@index([permitType])
+  @@map("permits")
+}
+
+// Contractor Companies
+model ContractorCompany {
+  id                String   @id @default(cuid())
+  name              String
+  licenseNumber     String?
+  licenseType       String?  // "Electrical", "Plumbing", "Roofing", "General Contractor"
+  state             String   @default("TX")
+  verificationStatus String  @default("pending") // "pending", "verified", "rejected"
+  phone             String?
+  email             String?
+  website           String?
+  
+  workEvents        WorkEvent[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([name])
+  @@index([licenseNumber])
+  @@map("contractor_companies")
+}
+
+// Work Events (from contractors)
+model WorkEvent {
+  id              String   @id @default(cuid())
+  propertyId      String
+  contractorId    String?
+  workType        String   // "Electrical", "Plumbing", "Roofing", "HVAC", etc.
+  description     String?
+  workDate        DateTime
+  cost            Float?
+  invoiceNumber   String?
+  documentUrl     String?  // S3 URL to invoice/receipt
+  verificationStatus String @default("pending") // "pending", "verified", "rejected"
+  
+  property        Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  contractor      ContractorCompany? @relation(fields: [contractorId], references: [id])
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([propertyId])
+  @@index([contractorId])
+  @@index([workType])
+  @@map("work_events")
+}
+
+// Rental Property Signals
+model RentalSignal {
+  id          String   @id @default(cuid())
+  propertyId  String
+  source      String   // "mls", "listing_site", "utility", "user_report"
+  startDate   DateTime?
+  endDate     DateTime?
+  confidence  Float    @default(0.5) // 0-1 confidence score
+  evidence    Json?    // Supporting evidence data
+  
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([propertyId])
+  @@map("rental_signals")
+}
+
+// Insurance Claims
+model InsuranceClaim {
+  id                String   @id @default(cuid())
+  propertyId        String
+  claimType         String   // "Water Damage", "Fire", "Wind/Hail", "Theft", etc.
+  claimDate         DateTime
+  amount            Float?
+  status            String?  // "Filed", "Approved", "Denied", "Paid"
+  submittedBy       String?  // User ID or "system"
+  verificationStatus String  @default("pending") // "pending", "verified", "rejected"
+  documentUrl       String?  // S3 URL to claim document
+  
+  property          Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@index([propertyId])
+  @@index([claimType])
+  @@map("insurance_claims")
+}
+
+// Reports
+model Report {
+  id          String   @id @default(cuid())
+  propertyId  String
+  version     Int      @default(1)
+  generatedAt DateTime @default(now())
+  snapshot    Json     // Full report data snapshot
+  shareToken  String?  @unique // For shareable links
+  
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([propertyId])
+  @@index([shareToken])
+  @@map("reports")
+}
+
+// Users (simplified for now, will add auth later)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  role      String   @default("buyer") // "buyer", "realtor", "homeowner", "contractor", "admin"
+  
+  notifications NotificationSubscription[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([email])
+  @@map("users")
+}
+
+// Notification Subscriptions
+model NotificationSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  propertyId String
+  eventType String   // "permit", "sale", "ownership_change", "work_event", etc.
+  enabled   Boolean  @default(true)
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  property  Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([userId, propertyId, eventType])
+  @@index([propertyId])
+  @@map("notification_subscriptions")
+}
+
