@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const suggestions = properties.map((p) => ({
+    const suggestions = properties.map((p: { id: string; address: string; city: string; state: string; zipCode: string }) => ({
       id: p.id,
       fullAddress: `${p.address}, ${p.city}, ${p.state} ${p.zipCode}`,
       address: p.address,
