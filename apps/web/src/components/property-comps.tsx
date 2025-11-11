@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card } from "../components/ui/card"
+import { Badge } from "../components/ui/badge"
 import { MapPin, Bed, Bath, Ruler, TrendingUp } from "lucide-react"
 
 const comparables = [

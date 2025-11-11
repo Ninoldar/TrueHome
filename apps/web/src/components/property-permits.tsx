@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card } from "../components/ui/card"
+import { Badge } from "../components/ui/badge"
 import { CheckCircle2, FileText, Hammer, Zap } from "lucide-react"
 
 const permits = [

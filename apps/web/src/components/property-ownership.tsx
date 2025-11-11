@@ -1,5 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Card } from "../components/ui/card"
+import { Avatar, AvatarFallback } from "../components/ui/avatar"
 import { Calendar, DollarSign, TrendingUp } from "lucide-react"
 
 const owners = [
