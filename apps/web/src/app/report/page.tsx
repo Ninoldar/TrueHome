@@ -2,9 +2,9 @@ import { PropertyHero } from "../../components/property-hero"
 import { PropertyTimeline } from "../../components/property-timeline"
 import { PropertyStats } from "../../components/property-stats"
 import { PropertyDetails } from "../../components/property-details"
-import { PropertyOwnership } from "../components/property-ownership"
-import { PropertyPermits } from "../components/property-permits"
-import { PropertyComps } from "../components/property-comps"
+import { PropertyOwnership } from "../../components/property-ownership"
+import { PropertyPermits } from "../../components/property-permits"
+import { PropertyComps } from "../../components/property-comps"
 
 export default function PropertyReportPage() {
   return (
