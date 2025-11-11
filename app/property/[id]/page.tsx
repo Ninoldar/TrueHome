@@ -54,14 +54,21 @@ export default function PropertyPage() {
   const [loading, setLoading] = useState(true)
   const [generatingReport, setGeneratingReport] = useState(false)
   const [reportId, setReportId] = useState<string | null>(null)
+  const propertyId = params.id as string
 
   useEffect(() => {
     const fetchProperty = async () => {
+      if (!propertyId) {
+        setLoading(false)
+        return
+      }
       try {
-        const response = await fetch(`/api/properties/${params.id}`)
+        const response = await fetch(`/api/properties/${propertyId}`)
         const data = await response.json()
-        if (response.ok) {
+        if (response.ok && data.property) {
           setProperty(data.property)
+        } else {
+          console.error('Property not found:', data.error)
         }
       } catch (error) {
         console.error('Error fetching property:', error)
@@ -70,7 +77,7 @@ export default function PropertyPage() {
       }
     }
     fetchProperty()
-  }, [params.id])
+  }, [propertyId])
 
   const handleGenerateReport = async () => {
     setGeneratingReport(true)
@@ -78,7 +85,7 @@ export default function PropertyPage() {
       const response = await fetch('/api/reports/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ propertyId: params.id }),
+        body: JSON.stringify({ propertyId }),
       })
       const data = await response.json()
       if (response.ok) {

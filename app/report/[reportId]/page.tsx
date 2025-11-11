@@ -55,14 +55,21 @@ export default function ReportPage() {
   const params = useParams()
   const [reportData, setReportData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
+  const reportId = params.reportId as string
 
   useEffect(() => {
     const fetchReport = async () => {
+      if (!reportId) {
+        setLoading(false)
+        return
+      }
       try {
-        const response = await fetch(`/api/reports/${params.reportId}`)
+        const response = await fetch(`/api/reports/${reportId}`)
         const data = await response.json()
-        if (response.ok) {
+        if (response.ok && data.reportData) {
           setReportData(data.reportData)
+        } else {
+          console.error('Report not found:', data.error)
         }
       } catch (error) {
         console.error('Error fetching report:', error)
@@ -71,7 +78,7 @@ export default function ReportPage() {
       }
     }
     fetchReport()
-  }, [params.reportId])
+  }, [reportId])
 
   if (loading) {
     return (
