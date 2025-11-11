@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import { prisma } from '../../../../lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,6 +16,8 @@ export async function GET(request: NextRequest) {
       where: {
         OR: [
           { address: { contains: query, mode: 'insensitive' } },
+          { city: { contains: query, mode: 'insensitive' } },
+          { zipCode: { contains: query, mode: 'insensitive' } },
           {
             AND: [
               { address: { contains: query.split(' ')[0], mode: 'insensitive' } },

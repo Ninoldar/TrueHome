@@ -27,7 +27,6 @@
     "@nestjs/microservices": "latest",
     "@nestjs/platform-express": "latest",
     "@nestjs/websockets": "latest",
-    "@prisma/client": "latest",
     "@radix-ui/react-avatar": "latest",
     "@radix-ui/react-slot": "latest",
     "@truehome/db": "latest",
@@ -43,7 +42,6 @@
     "crypto": "latest",
     "lucide-react": "^0.454.0",
     "next-themes": "latest",
-    "prisma": "latest",
     "puppeteer": "latest",
     "reflect-metadata": "latest",
     "rxjs": "latest",
@@ -52,8 +50,10 @@
     "tw-animate-css": "latest"
   },
   "devDependencies": {
+    "@prisma/client": "^6.19.0",
     "@types/node": "^22",
     "postcss": "^8.5",
+    "prisma": "^6.19.0",
     "turbo": "^1.11.2",
     "typescript": "^5"
   }
