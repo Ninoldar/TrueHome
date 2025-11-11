@@ -20,9 +20,9 @@ Vercel is removing `apps/api` files during build, which is correct since we're u
 
 ### Environment Variables
 Add these in Vercel dashboard:
-```
+\`\`\`
 DATABASE_URL=your_production_database_url
-```
+\`\`\`
 
 ## Important Notes
 
@@ -46,4 +46,3 @@ If build fails:
 2. Verify Prisma client is generated
 3. Ensure all API routes are in `apps/web/src/app/api/`
 4. Check build logs for specific errors
-

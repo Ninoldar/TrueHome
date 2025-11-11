@@ -33,6 +33,7 @@
     "@truehome/db": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "@vercel/analytics": "latest",
     "axios": "latest",
     "cheerio": "latest",
     "class-transformer": "latest",
