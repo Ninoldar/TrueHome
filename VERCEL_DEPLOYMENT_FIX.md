@@ -2,11 +2,13 @@
 
 ## Root Directory Setting
 
-**IMPORTANT:** In Vercel Dashboard → Project Settings → General:
+**CRITICAL:** In Vercel Dashboard → Project Settings → General:
 
 Set **Root Directory** to: `apps/web`
 
-This tells Vercel where your Next.js app is located.
+⚠️ **This MUST be set in the Vercel Dashboard, NOT in vercel.json** (vercel.json doesn't support rootDirectory property)
+
+This tells Vercel where your Next.js app is located in the monorepo.
 
 ## Build Settings
 
