@@ -16,12 +16,12 @@
 
 If you haven't set up a remote yet:
 
-```bash
+\`\`\`bash
 # Create a new repository on GitHub first, then:
 git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
 git branch -M main
 git push -u origin main
-```
+\`\`\`
 
 ### 2. Deploy on Vercel
 
@@ -41,10 +41,10 @@ git push -u origin main
 #### Environment Variables
 Add these in Vercel dashboard:
 
-```
+\`\`\`
 DATABASE_URL=your_production_database_url
 NEXT_PUBLIC_API_URL=/api
-```
+\`\`\`
 
 #### Monorepo Configuration
 
@@ -91,20 +91,20 @@ For production, you'll need:
    - Add to environment variables
 
 2. **Run Migrations**
-   ```bash
+   \`\`\`bash
    DATABASE_URL=your_prod_url npm run db:migrate
-   ```
+   \`\`\`
 
 3. **Seed Data (Optional)**
-   ```bash
+   \`\`\`bash
    DATABASE_URL=your_prod_url npm run db:seed
-   ```
+   \`\`\`
 
 ### 5. Environment Variables Checklist
 
 Add these in Vercel dashboard:
 
-```
+\`\`\`
 # Database
 DATABASE_URL=postgresql://user:pass@host:5432/dbname
 
@@ -113,18 +113,18 @@ NEXT_PUBLIC_API_URL=https://your-api-url.com
 
 # CORS (for API)
 FRONTEND_URL=https://your-vercel-app.vercel.app
-```
+\`\`\`
 
 ## Quick Deploy Commands
 
-```bash
+\`\`\`bash
 # 1. Push to GitHub
 git push origin main
 
 # 2. Then go to Vercel and import repo
 # 3. Configure settings as above
 # 4. Deploy!
-```
+\`\`\`
 
 ## Troubleshooting
 
@@ -154,4 +154,3 @@ For MVP, you can start with:
 - Frontend on Vercel
 - API on Railway (free tier available)
 - Database on Supabase (free tier available)
-

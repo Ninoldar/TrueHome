@@ -12,29 +12,29 @@ This guide will help you set up and run the TrueHome MVP with sample data.
 
 ### 1. Install Dependencies
 
-```bash
+\`\`\`bash
 npm install
-```
+\`\`\`
 
 ### 2. Start Docker Services
 
 Start PostgreSQL, Redis, OpenSearch, and MinIO:
 
-```bash
+\`\`\`bash
 npm run docker:up
-```
+\`\`\`
 
 Wait a few moments for all services to be healthy. You can check with:
 
-```bash
+\`\`\`bash
 docker ps
-```
+\`\`\`
 
 ### 3. Set Up Environment Variables
 
 Create a `.env` file in the root directory (or copy from `.env.example` if it exists):
 
-```bash
+\`\`\`bash
 # Database
 DATABASE_URL="postgresql://truehome:truehome@localhost:5432/truehome?schema=public"
 
@@ -44,48 +44,48 @@ FRONTEND_URL=http://localhost:3000
 
 # Next.js
 NEXT_PUBLIC_API_URL=http://localhost:4000
-```
+\`\`\`
 
 ### 4. Generate Prisma Client and Run Migrations
 
-```bash
+\`\`\`bash
 npm run db:generate
 npm run db:migrate
-```
+\`\`\`
 
 ### 5. Seed Sample Data
 
 This will populate the database with 5 sample properties with rich history:
 
-```bash
+\`\`\`bash
 npm run db:seed
-```
+\`\`\`
 
 You should see output like:
-```
+\`\`\`
 🌱 Starting data seeding...
 🧹 Clearing existing data...
 📦 Ingesting property: 1234 Main Street
 ✅ Completed: 1234 Main Street
 ...
 🎉 Data seeding completed successfully!
-```
+\`\`\`
 
 ### 6. Start Development Servers
 
 In separate terminals:
 
 **Terminal 1 - API Server:**
-```bash
+\`\`\`bash
 cd apps/api
 npm run dev
-```
+\`\`\`
 
 **Terminal 2 - Web Server:**
-```bash
+\`\`\`bash
 cd apps/web
 npm run dev
-```
+\`\`\`
 
 ### 7. Access the Application
 
@@ -162,11 +162,11 @@ If you get connection errors:
 ### Prisma Client Not Found
 
 If you see "PrismaClient is not defined":
-```bash
+\`\`\`bash
 cd packages/db
 npm install
 npm run generate
-```
+\`\`\`
 
 ### Port Already in Use
 
@@ -206,9 +206,8 @@ Once the MVP is running, you can:
 ## Stopping Services
 
 To stop all Docker services:
-```bash
+\`\`\`bash
 npm run docker:down
-```
+\`\`\`
 
 To stop development servers, press `Ctrl+C` in each terminal.
-

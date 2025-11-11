@@ -6,7 +6,7 @@ Your changes have been committed locally! Here's how to push to a remote reposit
 
 If you already have a remote repository set up:
 
-```bash
+\`\`\`bash
 # Check if remote exists
 git remote -v
 
@@ -15,7 +15,7 @@ git push -u origin main
 
 # Or if using a different branch name
 git push -u origin main:main
-```
+\`\`\`
 
 ## Option 2: Create New Remote Repository
 
@@ -24,29 +24,29 @@ git push -u origin main:main
 1. **Create a new repository on GitHub** (don't initialize with README)
 
 2. **Add the remote and push:**
-   ```bash
+   \`\`\`bash
    git remote add origin https://github.com/YOUR_USERNAME/truehome.git
    git branch -M main
    git push -u origin main
-   ```
+   \`\`\`
 
 ### GitLab
 
 1. **Create a new project on GitLab**
 
 2. **Add the remote and push:**
-   ```bash
+   \`\`\`bash
    git remote add origin https://gitlab.com/YOUR_USERNAME/truehome.git
    git branch -M main
    git push -u origin main
-   ```
+   \`\`\`
 
 ### Other Git Hosting
 
-```bash
+\`\`\`bash
 git remote add origin YOUR_REPO_URL
 git push -u origin main
-```
+\`\`\`
 
 ## Current Status
 
@@ -60,17 +60,17 @@ git push -u origin main
 Once pushed, you can:
 
 1. **Wipe and reset locally** (if needed):
-   ```bash
+   \`\`\`bash
    ./wipe-and-reset.sh
-   ```
+   \`\`\`
 
 2. **Clone fresh on another machine**:
-   ```bash
+   \`\`\`bash
    git clone YOUR_REPO_URL
    cd truehome
    npm install
    ./setup-mvp.sh
-   ```
+   \`\`\`
 
 ## What's Included in This Commit
 
@@ -80,4 +80,3 @@ Once pushed, you can:
 - ✅ Comprehensive documentation
 - ✅ Database schema and migrations
 - ✅ All source code for API and web app
-

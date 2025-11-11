@@ -9,15 +9,15 @@
 
 ### Step 2: Add API Key to Environment
 Add to your `.env` file:
-```bash
+\`\`\`bash
 PROPERTY_RADAR_API_KEY=your_api_key_here
-```
+\`\`\`
 
 ### Step 3: Test the Integration
-```bash
+\`\`\`bash
 # Fetch a real property
 curl "http://localhost:4000/ingestion/fetch-propertyradar?address=1234%20Main%20St&city=Plano&state=TX"
-```
+\`\`\`
 
 ### Step 4: Use in Your App
 The property will be automatically:
@@ -29,10 +29,10 @@ The property will be automatically:
 ## 🔧 Alternative: Web Scraping (Free but more work)
 
 ### Step 1: Install Scraping Tools
-```bash
+\`\`\`bash
 cd apps/api
 npm install puppeteer cheerio
-```
+\`\`\`
 
 ### Step 2: Implement Scraper
 See `apps/api/src/ingestion/sources/web-scraper.ingester.ts` for template
@@ -78,20 +78,20 @@ See `apps/api/src/ingestion/sources/web-scraper.ingester.ts` for template
 ## 📝 Example Usage
 
 ### Via API Endpoint
-```bash
+\`\`\`bash
 # Fetch real property
 curl "http://localhost:4000/ingestion/fetch-propertyradar?address=1234%20Main%20St&city=Plano&state=TX"
-```
+\`\`\`
 
 ### Via Code
-```typescript
+\`\`\`typescript
 // In your service
 const property = await propertyRadarIngester.ingestPropertyByAddress(
   '1234 Main St',
   'Plano',
   'TX'
 );
-```
+\`\`\`
 
 ## ⚠️ Important Notes
 
@@ -100,4 +100,3 @@ const property = await propertyRadarIngester.ingestPropertyByAddress(
 - **Data Quality**: Validate data before storing
 - **Error Handling**: Implement retry logic and error logging
 - **Costs**: Monitor API usage to control costs
-

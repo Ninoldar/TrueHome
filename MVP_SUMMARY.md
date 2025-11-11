@@ -75,7 +75,7 @@ The MVP includes 5 sample properties with rich history:
 
 ### 📁 Project Structure
 
-```
+\`\`\`
 truehome/
 ├── apps/
 │   ├── api/              # NestJS backend
@@ -92,17 +92,17 @@ truehome/
 │   ├── db/               # Prisma schema & client
 │   └── shared/           # Shared types & utilities
 └── docker-compose.yml     # Infrastructure services
-```
+\`\`\`
 
 ### 🚀 Quick Start
 
 1. **Automated Setup** (recommended):
-   ```bash
+   \`\`\`bash
    ./setup-mvp.sh
-   ```
+   \`\`\`
 
 2. **Manual Setup**:
-   ```bash
+   \`\`\`bash
    # Install dependencies
    npm install
    
@@ -117,7 +117,7 @@ truehome/
    # Start servers (in separate terminals)
    cd apps/api && npm run dev
    cd apps/web && npm run dev
-   ```
+   \`\`\`
 
 3. **Access**:
    - Frontend: http://localhost:3000
@@ -226,4 +226,3 @@ truehome/
 ---
 
 **Ready to showcase!** The MVP demonstrates the core value proposition: comprehensive property history in an easy-to-use interface.
-

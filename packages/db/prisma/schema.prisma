@@ -303,4 +303,3 @@ model NotificationSubscription {
   @@index([propertyId])
   @@map("notification_subscriptions")
 }
-

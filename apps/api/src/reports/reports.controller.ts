@@ -20,4 +20,3 @@ export class ReportsController {
     return this.reportsService.findByShareToken(token);
   }
 }
-

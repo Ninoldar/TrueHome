@@ -7,22 +7,53 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint",
     "db:generate": "cd packages/db && prisma generate",
     "db:migrate": "cd packages/db && prisma migrate dev",
     "db:migrate:deploy": "cd packages/db && prisma migrate deploy",
-    "db:studio": "cd packages/db && prisma studio",
     "db:seed": "cd apps/api && ts-node -r tsconfig-paths/register src/ingestion/scripts/seed-sample-data.ts",
-    "docker:up": "docker-compose up -d",
+    "db:studio": "cd packages/db && prisma studio",
+    "dev": "turbo run dev",
     "docker:down": "docker-compose down",
+    "docker:up": "docker-compose up -d",
+    "lint": "turbo run lint",
     "setup": "npm install && npm run db:generate && npm run db:migrate && npm run db:seed",
     "vercel:build": "npm install && npm run db:generate && cd apps/web && npm run build"
   },
+  "dependencies": {
+    "@nestjs/common": "latest",
+    "@nestjs/config": "latest",
+    "@nestjs/core": "latest",
+    "@nestjs/microservices": "latest",
+    "@nestjs/platform-express": "latest",
+    "@nestjs/websockets": "latest",
+    "@prisma/client": "latest",
+    "@radix-ui/react-avatar": "latest",
+    "@radix-ui/react-slot": "latest",
+    "@truehome/db": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "axios": "latest",
+    "cheerio": "latest",
+    "class-transformer": "latest",
+    "class-validator": "latest",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "crypto": "latest",
+    "lucide-react": "^0.454.0",
+    "next-themes": "latest",
+    "prisma": "latest",
+    "puppeteer": "latest",
+    "reflect-metadata": "latest",
+    "rxjs": "latest",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7",
+    "tw-animate-css": "latest"
+  },
   "devDependencies": {
+    "@types/node": "^22",
+    "postcss": "^8.5",
     "turbo": "^1.11.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5"
   }
 }
-

@@ -188,4 +188,3 @@ export class PropertyRadarIngester {
     return property;
   }
 }
-

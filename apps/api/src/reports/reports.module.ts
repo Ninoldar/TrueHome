@@ -10,4 +10,3 @@ import { PropertiesModule } from '../properties/properties.module';
   exports: [ReportsService],
 })
 export class ReportsModule {}
-

@@ -40,4 +40,3 @@ packages/db/migrations/
 
 # API (deployed separately)
 apps/api/
-

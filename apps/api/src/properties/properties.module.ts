@@ -8,4 +8,3 @@ import { PropertiesService } from './properties.service';
   exports: [PropertiesService],
 })
 export class PropertiesModule {}
-

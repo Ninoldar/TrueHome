@@ -21,4 +21,3 @@ import { IngestionModule } from './ingestion/ingestion.module';
   providers: [AppService],
 })
 export class AppModule {}
-

@@ -9,20 +9,20 @@
 ## Initial Setup
 
 1. **Install dependencies:**
-   ```bash
+   \`\`\`bash
    npm install
-   ```
+   \`\`\`
 
 2. **Set up environment variables:**
-   ```bash
+   \`\`\`bash
    cp .env.example .env
    # Edit .env with your configuration if needed
-   ```
+   \`\`\`
 
 3. **Start Docker services:**
-   ```bash
+   \`\`\`bash
    npm run docker:up
-   ```
+   \`\`\`
    
    This starts:
    - PostgreSQL with PostGIS (port 5432)
@@ -33,19 +33,19 @@
 4. **Wait for services to be healthy** (about 30-60 seconds)
 
 5. **Generate Prisma client:**
-   ```bash
+   \`\`\`bash
    npm run db:generate
-   ```
+   \`\`\`
 
 6. **Run database migrations:**
-   ```bash
+   \`\`\`bash
    npm run db:migrate
-   ```
+   \`\`\`
 
 7. **Start development servers:**
-   ```bash
+   \`\`\`bash
    npm run dev
-   ```
+   \`\`\`
 
    This will start:
    - Frontend: http://localhost:3000
@@ -54,14 +54,14 @@
 ## Verify Setup
 
 1. Check API health:
-   ```bash
+   \`\`\`bash
    curl http://localhost:4000/health
-   ```
+   \`\`\`
 
 2. Open Prisma Studio to view database:
-   ```bash
+   \`\`\`bash
    npm run db:studio
-   ```
+   \`\`\`
 
 3. Visit http://localhost:3000 in your browser
 
@@ -69,7 +69,7 @@
 
 You can add sample property data via the ingestion API:
 
-```bash
+\`\`\`bash
 curl -X POST http://localhost:4000/ingestion/property \
   -H "Content-Type: application/json" \
   -d '{
@@ -89,7 +89,7 @@ curl -X POST http://localhost:4000/ingestion/property \
     "source": "manual",
     "sourceId": "test_001"
   }'
-```
+\`\`\`
 
 Then search for "123 Main" on the frontend to see it appear.
 
@@ -116,4 +116,3 @@ Then search for "123 Main" on the frontend to see it appear.
 3. Add authentication (Clerk/Auth0)
 4. Add payment processing (Stripe)
 5. Deploy to production
-

@@ -35,31 +35,31 @@ TrueHome provides detailed property history reports including:
 ### Setup
 
 1. Install dependencies:
-```bash
+\`\`\`bash
 npm install
-```
+\`\`\`
 
 2. Start Docker services (PostgreSQL, Redis, OpenSearch, MinIO):
-```bash
+\`\`\`bash
 npm run docker:up
-```
+\`\`\`
 
 3. Set up environment variables:
-```bash
+\`\`\`bash
 cp .env.example .env
 # Edit .env with your configuration
-```
+\`\`\`
 
 4. Generate Prisma client and run migrations:
-```bash
+\`\`\`bash
 npm run db:generate
 npm run db:migrate
-```
+\`\`\`
 
 5. Start development servers:
-```bash
+\`\`\`bash
 npm run dev
-```
+\`\`\`
 
 - Frontend: http://localhost:3000
 - API: http://localhost:4000
@@ -67,7 +67,7 @@ npm run dev
 
 ## Project Structure
 
-```
+\`\`\`
 truehome/
 ├── apps/
 │   ├── web/          # Next.js frontend
@@ -77,7 +77,7 @@ truehome/
 │   ├── config/        # Shared configuration
 │   └── shared/        # Shared utilities and types
 └── infra/             # Infrastructure as code
-```
+\`\`\`
 
 ## Development
 
@@ -90,4 +90,3 @@ truehome/
 ## License
 
 Private - All rights reserved
-

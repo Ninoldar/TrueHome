@@ -79,4 +79,3 @@ export class ReportsService {
     return report;
   }
 }
-

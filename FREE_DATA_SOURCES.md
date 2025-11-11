@@ -8,10 +8,10 @@ I've set up free web scraping infrastructure for pulling real property data from
 
 ### 1. Install Dependencies
 
-```bash
+\`\`\`bash
 cd apps/api
 npm install
-```
+\`\`\`
 
 This will install:
 - `puppeteer` - For browser automation/scraping
@@ -21,10 +21,10 @@ This will install:
 ### 2. Use the Free Scraper
 
 #### Option A: Basic Property (Geocoding Only)
-```bash
+\`\`\`bash
 # Fetch property with geocoding (free, no API key needed)
 curl "http://localhost:4000/ingestion/fetch-free?address=1234%20Main%20St&city=Plano&state=TX"
-```
+\`\`\`
 
 This will:
 - ✅ Geocode the address (get lat/long) using OpenStreetMap (free)
@@ -32,10 +32,10 @@ This will:
 - ⚠️ Limited property details (you'll need to add more sources)
 
 #### Option B: Scrape Collin CAD (Full Details)
-```bash
+\`\`\`bash
 # Scrape from Collin CAD website (requires website inspection)
 curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=123456789"
-```
+\`\`\`
 
 **Note**: You'll need to inspect the actual Collin CAD website and update the selectors in `web-scraper.ingester.ts` based on their HTML structure.
 
@@ -85,7 +85,7 @@ For Collin CAD:
 
 Edit `apps/api/src/ingestion/sources/web-scraper.ingester.ts`:
 
-```typescript
+\`\`\`typescript
 // Update the scrapeCollinCad method with actual selectors
 const propertyData = {
   apn: apn,
@@ -93,13 +93,13 @@ const propertyData = {
   city: $('.actual-city-class').text().trim(), // Update selector
   // ... etc
 };
-```
+\`\`\`
 
 ### Step 3: Test
 
-```bash
+\`\`\`bash
 curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=YOUR_APN"
-```
+\`\`\`
 
 ## 📊 Current Capabilities
 
@@ -121,9 +121,9 @@ curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=YOUR_APN"
 ## 🎯 Recommended Next Steps
 
 1. **Start with geocoding** (already working):
-   ```bash
+   \`\`\`bash
    curl "http://localhost:4000/ingestion/fetch-free?address=YOUR_ADDRESS&city=YOUR_CITY"
-   ```
+   \`\`\`
 
 2. **Inspect Collin CAD website**:
    - Visit https://www.collincad.org/
@@ -132,9 +132,9 @@ curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=YOUR_APN"
    - Update selectors in `web-scraper.ingester.ts`
 
 3. **Test scraping**:
-   ```bash
+   \`\`\`bash
    curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=YOUR_APN"
-   ```
+   \`\`\`
 
 4. **Add more sources**:
    - County clerk records
@@ -163,16 +163,16 @@ curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=YOUR_APN"
 ## 🔍 Example Usage
 
 ### Basic Property (Geocoding)
-```bash
+\`\`\`bash
 # This works right now - no setup needed
 curl "http://localhost:4000/ingestion/fetch-free?address=1234%20Main%20Street&city=Plano&state=TX"
-```
+\`\`\`
 
 ### Full CAD Scraping (Needs Selector Updates)
-```bash
+\`\`\`bash
 # This needs website inspection first
 curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=123456789"
-```
+\`\`\`
 
 ## 💡 Tips
 
@@ -202,4 +202,3 @@ curl "http://localhost:4000/ingestion/scrape-collin-cad?apn=123456789"
 ---
 
 **You now have free scraping infrastructure!** Start with geocoding, then add full scraping as you inspect target websites.
-

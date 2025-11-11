@@ -25,4 +25,3 @@ export class SearchController {
     return this.searchService.autocompleteAddresses(query, limitNum);
   }
 }
-
