@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get total counts
-    const [totalUsers, totalReports, allCredits, allPurchases] = await Promise.all([
+    const [totalUsers, totalReports, creditsForRevenue, purchasesForRevenue] = await Promise.all([
       prisma.user.count(),
       prisma.report.count(),
       prisma.reportCredit.findMany({
@@ -41,10 +41,10 @@ export async function GET(request: NextRequest) {
     ])
 
     // Calculate total revenue
-    const creditRevenue = allCredits.reduce((sum, credit) => sum + credit.amount, 0)
-    const purchaseRevenue = allPurchases.reduce((sum, purchase) => sum + purchase.amount, 0)
+    const creditRevenue = creditsForRevenue.reduce((sum, credit) => sum + credit.amount, 0)
+    const purchaseRevenue = purchasesForRevenue.reduce((sum, purchase) => sum + purchase.amount, 0)
     const totalRevenue = creditRevenue + purchaseRevenue
-    const totalCredits = allCredits.reduce((sum, credit) => sum + credit.credits, 0)
+    const totalCredits = creditsForRevenue.reduce((sum, credit) => sum + credit.credits, 0)
 
     // Get recent users (last 10)
     const recentUsers = await prisma.user.findMany({
