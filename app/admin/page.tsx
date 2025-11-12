@@ -146,11 +146,16 @@ export default function AdminDashboardPage() {
   const fetchAdminData = async () => {
     try {
       const response = await fetch('/api/admin/stats')
+      const data = await response.json()
+      
       if (response.ok) {
-        const data = await response.json()
+        console.log('Admin stats data:', data)
         setStats(data)
-      } else if (response.status === 403) {
-        router.push('/dashboard')
+      } else {
+        console.error('Admin stats error:', data)
+        if (response.status === 403) {
+          router.push('/dashboard')
+        }
       }
     } catch (error) {
       console.error('Error fetching admin data:', error)
@@ -180,7 +185,15 @@ export default function AdminDashboardPage() {
       <main className="min-h-screen">
         <Header />
         <div className="pt-16 pb-24 flex items-center justify-center min-h-[60vh]">
-          <div className="text-muted-foreground">No data available</div>
+          <div className="text-center">
+            <div className="text-muted-foreground mb-4">No data available</div>
+            <Button onClick={fetchAdminData} variant="outline">
+              Retry
+            </Button>
+            <p className="text-xs text-muted-foreground mt-4">
+              Check browser console for error details
+            </p>
+          </div>
         </div>
         <Footer />
       </main>
