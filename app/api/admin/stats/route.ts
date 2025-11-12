@@ -353,33 +353,41 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all purchases (for revenue table)
-    const allPurchases = await prisma.purchase.findMany({
-      where: { status: 'COMPLETED' },
-      orderBy: { purchasedAt: 'desc' },
-      select: {
-        id: true,
-        amount: true,
-        purchasedAt: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
+    console.log('[Admin Stats] Fetching all purchases...')
+    let allPurchases = []
+    try {
+      allPurchases = await prisma.purchase.findMany({
+        where: { status: 'COMPLETED' },
+        orderBy: { purchasedAt: 'desc' },
+        select: {
+          id: true,
+          amount: true,
+          purchasedAt: true,
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
           },
-        },
-        report: {
-          select: {
-            reportNumber: true,
-            property: {
-              select: {
-                address: true,
-                city: true,
-                state: true,
+          report: {
+            select: {
+              reportNumber: true,
+              property: {
+                select: {
+                  address: true,
+                  city: true,
+                  state: true,
+                },
               },
             },
           },
         },
-      },
-    })
+      })
+      console.log('[Admin Stats] Fetched', allPurchases.length, 'purchases')
+    } catch (err: any) {
+      console.error('[Admin Stats] Error fetching purchases:', err.message)
+      allPurchases = []
+    }
 
     const response = {
       totalUsers,
@@ -394,7 +402,7 @@ export async function GET(request: NextRequest) {
       revenueToday: todayRevenue,
       // Recent data for overview
       recentUsers: allUsers.slice(0, 10),
-      recentCredits: allCredits.slice(0, 10),
+      recentCredits: recentCredits,
       recentPurchases: allPurchases.slice(0, 10),
       // Full lists for tables
       allUsers,
