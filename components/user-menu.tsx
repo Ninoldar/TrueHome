@@ -18,8 +18,20 @@ export function UserMenu() {
   }
 
   if (session?.user) {
+    const isAdmin = (session.user as any)?.role === 'ADMIN'
+    
     return (
       <div className="flex items-center gap-3">
+        {isAdmin && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push('/admin')}
+            className="hidden sm:inline-flex"
+          >
+            Admin
+          </Button>
+        )}
         <Button
           variant="ghost"
           size="sm"
