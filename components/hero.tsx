@@ -28,7 +28,11 @@ export function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="text-base">
+              <Button 
+                size="lg" 
+                className="text-base"
+                onClick={() => router.push('/pricing')}
+              >
                 {"Get Your Report"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>

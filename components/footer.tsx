@@ -1,6 +1,10 @@
+'use client'
+
 import { Home } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export function Footer() {
+  const router = useRouter()
   return (
     <footer className="py-12 px-4 sm:px-6 lg:px-8 bg-muted/30 border-t border-border">
       <div className="container mx-auto">
@@ -21,24 +25,36 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Product</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button 
+                  onClick={() => router.push('/features')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
                   Features
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button 
+                  onClick={() => router.push('/pricing')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
                   Pricing
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button 
+                  onClick={() => router.push('/sample-report')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
                   Sample Report
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  API
-                </a>
+                <button 
+                  onClick={() => router.push('/benefits')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
+                  Benefits
+                </button>
               </li>
             </ul>
           </div>
