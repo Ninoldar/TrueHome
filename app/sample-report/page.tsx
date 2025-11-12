@@ -1,6 +1,7 @@
 'use client'
 
 import { format } from 'date-fns'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
@@ -372,6 +373,7 @@ const sampleReportData = {
 }
 
 export default function SampleReportPage() {
+  const router = useRouter()
   const getRecommendationColor = (type: string) => {
     switch (type) {
       case 'warning':
@@ -854,10 +856,19 @@ export default function SampleReportPage() {
               This is just a sample. Get a complete, personalized report for any property.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-base">
+              <Button 
+                size="lg" 
+                className="text-base"
+                onClick={() => router.push('/pricing')}
+              >
                 Get Your Report - $49.99
               </Button>
-              <Button size="lg" variant="outline" className="text-base">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-base"
+                onClick={() => router.push('/')}
+              >
                 Search Properties
               </Button>
             </div>

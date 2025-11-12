@@ -1,0 +1,12 @@
+address,city,state,zipCode,propertyType,yearBuilt,squareFeet,lotSize
+123 Main Street,Plano,TX,75023,Single Family Home,1990,2400,0.15
+456 Oak Avenue,McKinney,TX,75069,Single Family Home,2005,3200,0.25
+789 Pine Road,Frisco,TX,75033,Condo,2010,1800,0.05
+321 Elm Street,Allen,TX,75002,Single Family Home,1985,2200,0.20
+654 Maple Drive,Richardson,TX,75080,Townhouse,2015,1900,0.10
+987 Cedar Lane,Wylie,TX,75098,Single Family Home,2000,2800,0.22
+147 Birch Court,Murphy,TX,75094,Single Family Home,2012,3500,0.30
+258 Spruce Way,Parker,TX,75002,Single Family Home,1995,2600,0.18
+369 Willow Street,Lucas,TX,75002,Single Family Home,2008,3000,0.25
+741 Ash Avenue,Fairview,TX,75069,Single Family Home,2018,4000,0.35
+
