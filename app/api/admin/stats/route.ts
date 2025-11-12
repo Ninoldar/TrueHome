@@ -190,95 +190,167 @@ export async function GET(request: NextRequest) {
     })
 
     // Get recent credit purchases (last 10)
-    const recentCredits = await prisma.reportCredit.findMany({
-      take: 10,
-      where: { status: 'COMPLETED' },
-      orderBy: { purchasedAt: 'desc' },
-      select: {
-        id: true,
-        credits: true,
-        packType: true,
-        amount: true,
-        purchasedAt: true,
-        user: {
-          select: {
-            name: true,
-            email: true,
+    console.log('[Admin Stats] Fetching recent credits...')
+    let recentCredits = []
+    try {
+      recentCredits = await prisma.reportCredit.findMany({
+        take: 10,
+        where: { status: 'COMPLETED' },
+        orderBy: { purchasedAt: 'desc' },
+        select: {
+          id: true,
+          credits: true,
+          packType: true,
+          amount: true,
+          purchasedAt: true,
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
           },
         },
-      },
-    })
+      })
+    } catch (err: any) {
+      console.error('[Admin Stats] Error fetching recent credits:', err.message)
+      recentCredits = []
+    }
 
     // Get all users (for users table)
-    const allUsers = await prisma.user.findMany({
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        _count: {
-          select: {
-            purchasedReports: true,
-            reportCredits: true,
+    console.log('[Admin Stats] Fetching all users...')
+    let allUsers = []
+    try {
+      allUsers = await prisma.user.findMany({
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          createdAt: true,
+          _count: {
+            select: {
+              purchasedReports: true,
+              reportCredits: true,
+            },
           },
         },
-      },
-    }).catch((err) => {
-      console.error('Error fetching users:', err)
-      return []
-    })
-
-    // Get all reports (for reports table)
-    const allReports = await prisma.report.findMany({
-      orderBy: { generatedAt: 'desc' },
-      select: {
-        id: true,
-        reportNumber: true,
-        generatedAt: true,
-        price: true,
-        status: true,
-        property: {
+      })
+      console.log('[Admin Stats] Fetched', allUsers.length, 'users')
+    } catch (err: any) {
+      console.error('[Admin Stats] Error fetching users:', err.message)
+      // Try without _count if that's the issue
+      try {
+        allUsers = await prisma.user.findMany({
+          orderBy: { createdAt: 'desc' },
           select: {
-            address: true,
-            city: true,
-            state: true,
-            zipCode: true,
-          },
-        },
-        _count: {
-          select: {
-            purchases: true,
-          },
-        },
-      },
-    }).catch((err) => {
-      console.error('Error fetching reports:', err)
-      return []
-    })
-
-    // Get all credit purchases (for revenue table)
-    const allCredits = await prisma.reportCredit.findMany({
-      where: { status: 'COMPLETED' },
-      orderBy: { purchasedAt: 'desc' },
-      select: {
-        id: true,
-        credits: true,
-        packType: true,
-        amount: true,
-        purchasedAt: true,
-        user: {
-          select: {
+            id: true,
             name: true,
             email: true,
+            role: true,
+            createdAt: true,
+          },
+        })
+        // Add empty _count for compatibility
+        allUsers = allUsers.map(u => ({
+          ...u,
+          _count: { purchasedReports: 0, reportCredits: 0 },
+        }))
+        console.log('[Admin Stats] Fetched users without _count')
+      } catch (err2: any) {
+        console.error('[Admin Stats] Error fetching users (fallback):', err2.message)
+        allUsers = []
+      }
+    }
+
+    // Get all reports (for reports table)
+    console.log('[Admin Stats] Fetching all reports...')
+    let allReports = []
+    try {
+      allReports = await prisma.report.findMany({
+        orderBy: { generatedAt: 'desc' },
+        select: {
+          id: true,
+          reportNumber: true,
+          generatedAt: true,
+          price: true,
+          status: true,
+          property: {
+            select: {
+              address: true,
+              city: true,
+              state: true,
+              zipCode: true,
+            },
+          },
+          _count: {
+            select: {
+              purchases: true,
+            },
           },
         },
-      },
-    }).catch((err) => {
-      console.error('Error fetching credits:', err)
-      return []
-    })
+      })
+      console.log('[Admin Stats] Fetched', allReports.length, 'reports')
+    } catch (err: any) {
+      console.error('[Admin Stats] Error fetching reports:', err.message)
+      // Try without _count if that's the issue
+      try {
+        allReports = await prisma.report.findMany({
+          orderBy: { generatedAt: 'desc' },
+          select: {
+            id: true,
+            reportNumber: true,
+            generatedAt: true,
+            price: true,
+            status: true,
+            property: {
+              select: {
+                address: true,
+                city: true,
+                state: true,
+                zipCode: true,
+              },
+            },
+          },
+        })
+        // Add empty _count for compatibility
+        allReports = allReports.map(r => ({
+          ...r,
+          _count: { purchases: 0 },
+        }))
+        console.log('[Admin Stats] Fetched reports without _count')
+      } catch (err2: any) {
+        console.error('[Admin Stats] Error fetching reports (fallback):', err2.message)
+        allReports = []
+      }
+    }
+
+    // Get all credit purchases (for revenue table)
+    console.log('[Admin Stats] Fetching all credits...')
+    let allCredits = []
+    try {
+      allCredits = await prisma.reportCredit.findMany({
+        where: { status: 'COMPLETED' },
+        orderBy: { purchasedAt: 'desc' },
+        select: {
+          id: true,
+          credits: true,
+          packType: true,
+          amount: true,
+          purchasedAt: true,
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+        },
+      })
+      console.log('[Admin Stats] Fetched', allCredits.length, 'credits')
+    } catch (err: any) {
+      console.error('[Admin Stats] Error fetching credits:', err.message)
+      allCredits = []
+    }
 
     // Get all purchases (for revenue table)
     const allPurchases = await prisma.purchase.findMany({
