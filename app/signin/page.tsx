@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Header } from '@/components/header'
@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Home, Mail, Lock } from 'lucide-react'
 
-export default function SignInPage() {
+function SignInForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [formData, setFormData] = useState({
@@ -197,6 +197,22 @@ export default function SignInPage() {
       </div>
       <Footer />
     </main>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen">
+        <Header />
+        <div className="pt-16 pb-24 flex items-center justify-center">
+          <div className="text-muted-foreground">Loading...</div>
+        </div>
+        <Footer />
+      </main>
+    }>
+      <SignInForm />
+    </Suspense>
   )
 }
 
