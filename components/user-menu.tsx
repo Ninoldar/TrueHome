@@ -20,6 +20,14 @@ export function UserMenu() {
   if (session?.user) {
     return (
       <div className="flex items-center gap-3">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push('/dashboard')}
+          className="hidden sm:inline-flex"
+        >
+          Dashboard
+        </Button>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-lg">
           <User className="w-4 h-4 text-primary" />
           <span className="text-sm font-medium text-foreground hidden sm:inline">
