@@ -101,6 +101,9 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+    }).catch((err) => {
+      console.error('Error fetching users:', err)
+      return []
     })
 
     // Get all reports (for reports table)
@@ -126,6 +129,9 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+    }).catch((err) => {
+      console.error('Error fetching reports:', err)
+      return []
     })
 
     // Get all credit purchases (for revenue table)
@@ -145,6 +151,9 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+    }).catch((err) => {
+      console.error('Error fetching credits:', err)
+      return []
     })
 
     // Get all purchases (for revenue table)
@@ -201,10 +210,18 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json(response)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching admin stats:', error)
+    console.error('Error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
+      },
       { status: 500 }
     )
   }
