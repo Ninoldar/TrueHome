@@ -26,6 +26,12 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    // Get today's date range (start of today to now)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
     // Get total counts
     const [totalUsers, totalReports, creditsForRevenue, purchasesForRevenue] = await Promise.all([
       prisma.user.count(),
@@ -40,11 +46,83 @@ export async function GET(request: NextRequest) {
       }),
     ])
 
+    // Get today's statistics
+    const [
+      usersToday,
+      reportsToday,
+      creditsToday,
+      purchasesToday,
+      revenueToday,
+    ] = await Promise.all([
+      prisma.user.count({
+        where: {
+          createdAt: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+      }),
+      prisma.report.count({
+        where: {
+          generatedAt: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+      }),
+      prisma.reportCredit.count({
+        where: {
+          status: 'COMPLETED',
+          purchasedAt: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+      }),
+      prisma.purchase.count({
+        where: {
+          status: 'COMPLETED',
+          purchasedAt: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+      }),
+      prisma.reportCredit.aggregate({
+        where: {
+          status: 'COMPLETED',
+          purchasedAt: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+        _sum: {
+          amount: true,
+        },
+      }),
+    ])
+
     // Calculate total revenue
     const creditRevenue = creditsForRevenue.reduce((sum, credit) => sum + credit.amount, 0)
     const purchaseRevenue = purchasesForRevenue.reduce((sum, purchase) => sum + purchase.amount, 0)
     const totalRevenue = creditRevenue + purchaseRevenue
     const totalCredits = creditsForRevenue.reduce((sum, credit) => sum + credit.credits, 0)
+    
+    // Calculate today's revenue
+    const todayCreditRevenue = revenueToday._sum.amount || 0
+    const todayPurchaseRevenue = await prisma.purchase.aggregate({
+      where: {
+        status: 'COMPLETED',
+        purchasedAt: {
+          gte: today,
+          lt: tomorrow,
+        },
+      },
+      _sum: {
+        amount: true,
+      },
+    })
+    const todayRevenue = todayCreditRevenue + (todayPurchaseRevenue._sum.amount || 0)
 
     // Get recent users (last 10)
     const recentUsers = await prisma.user.findMany({
@@ -190,13 +268,21 @@ export async function GET(request: NextRequest) {
       totalReports,
       totalRevenue,
       totalCredits,
-      recentUsers: allUsers.slice(0, 10), // Keep recent for overview
-      recentCredits: allCredits.slice(0, 10), // Keep recent for overview
-      recentPurchases: allPurchases.slice(0, 10), // Keep recent for overview
-      allUsers, // Full list for users table
-      allReports, // Full list for reports table
-      allCredits, // Full list for credits
-      allPurchases, // Full list for purchases
+      // Today's statistics
+      usersToday,
+      reportsToday,
+      creditsToday,
+      purchasesToday,
+      revenueToday: todayRevenue,
+      // Recent data for overview
+      recentUsers: allUsers.slice(0, 10),
+      recentCredits: allCredits.slice(0, 10),
+      recentPurchases: allPurchases.slice(0, 10),
+      // Full lists for tables
+      allUsers,
+      allReports,
+      allCredits,
+      allPurchases,
     }
 
     console.log('[Admin Stats API] Returning data:', {

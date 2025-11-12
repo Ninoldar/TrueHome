@@ -23,6 +23,11 @@ interface AdminStats {
   totalReports: number
   totalRevenue: number
   totalCredits: number
+  usersToday: number
+  reportsToday: number
+  creditsToday: number
+  purchasesToday: number
+  revenueToday: number
   recentUsers: Array<{
     id: string
     name: string
@@ -218,67 +223,156 @@ export default function AdminDashboardPage() {
             </p>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                    <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          {/* Stats Cards - Total */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">Overall Statistics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                      <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Users</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.totalUsers}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Users</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {stats.totalUsers}
-                    </p>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Reports</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.totalReports}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Revenue</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        ${stats.totalRevenue.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center">
+                      <CreditCard className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Credits Sold</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.totalCredits}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Reports</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {stats.totalReports}
-                    </p>
+          {/* Stats Cards - Today */}
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-foreground mb-4">Today's Activity</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                      <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">New Users</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.usersToday}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
-                    <DollarSign className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Total Revenue</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      ${stats.totalRevenue.toFixed(2)}
-                    </p>
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Reports Generated</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.reportsToday}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bg-card border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center">
-                    <CreditCard className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Revenue Today</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        ${stats.revenueToday.toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Credits Sold</p>
-                    <p className="text-2xl font-bold text-foreground">
-                      {stats.totalCredits}
-                    </p>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-orange-500/10 rounded-lg flex items-center justify-center">
+                      <CreditCard className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Credit Packs</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.creditsToday}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-lg p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Report Purchases</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {stats.purchasesToday}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
