@@ -62,6 +62,61 @@ interface AdminStats {
       email: string
     }
   }>
+  allUsers: Array<{
+    id: string
+    name: string
+    email: string
+    role: string
+    createdAt: string
+    _count: {
+      purchasedReports: number
+      reportCredits: number
+    }
+  }>
+  allReports: Array<{
+    id: string
+    reportNumber: string
+    generatedAt: string
+    price: number
+    status: string
+    property: {
+      address: string
+      city: string
+      state: string
+      zipCode: string
+    }
+    _count: {
+      purchases: number
+    }
+  }>
+  allCredits: Array<{
+    id: string
+    credits: number
+    packType: string
+    amount: number
+    purchasedAt: string
+    user: {
+      name: string
+      email: string
+    }
+  }>
+  allPurchases: Array<{
+    id: string
+    amount: number
+    purchasedAt: string
+    user: {
+      name: string
+      email: string
+    }
+    report?: {
+      reportNumber: string
+      property: {
+        address: string
+        city: string
+        state: string
+      }
+    }
+  }>
 }
 
 export default function AdminDashboardPage() {
@@ -360,48 +415,237 @@ export default function AdminDashboardPage() {
           {activeTab === 'users' && (
             <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-xl font-semibold text-foreground mb-4">
-                All Users
+                All Users ({stats.allUsers.length})
               </h2>
-              <p className="text-muted-foreground">
-                Full user list view coming soon. Currently showing recent users in Overview tab.
-              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Name</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Email</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Role</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Reports</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Credits</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Joined</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats.allUsers.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-4 text-center text-muted-foreground">
+                          No users found
+                        </td>
+                      </tr>
+                    ) : (
+                      stats.allUsers.map((user) => (
+                        <tr key={user.id} className="border-b border-border hover:bg-muted/50">
+                          <td className="p-3 text-sm text-foreground">{user.name}</td>
+                          <td className="p-3 text-sm text-foreground">{user.email}</td>
+                          <td className="p-3">
+                            <span className={`inline-block px-2 py-1 rounded text-xs ${
+                              user.role === 'ADMIN' 
+                                ? 'bg-purple-500/10 text-purple-600 dark:text-purple-400'
+                                : user.role === 'REALTOR'
+                                ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                                : 'bg-gray-500/10 text-gray-600 dark:text-gray-400'
+                            }`}>
+                              {user.role}
+                            </span>
+                          </td>
+                          <td className="p-3 text-sm text-foreground">{user._count.purchasedReports}</td>
+                          <td className="p-3 text-sm text-foreground">{user._count.reportCredits}</td>
+                          <td className="p-3 text-sm text-muted-foreground">
+                            {format(new Date(user.createdAt), 'MMM d, yyyy')}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
           {activeTab === 'reports' && (
             <div className="bg-card border border-border rounded-lg p-6">
               <h2 className="text-xl font-semibold text-foreground mb-4">
-                All Reports
+                All Reports ({stats.allReports.length})
               </h2>
-              <p className="text-muted-foreground">
-                Full reports list view coming soon. Currently showing recent purchases in Overview tab.
-              </p>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="border-b border-border">
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Report #</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Property</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Location</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Price</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Purchases</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Generated</th>
+                      <th className="text-left p-3 text-sm font-semibold text-foreground">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats.allReports.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="p-4 text-center text-muted-foreground">
+                          No reports found
+                        </td>
+                      </tr>
+                    ) : (
+                      stats.allReports.map((report) => (
+                        <tr key={report.id} className="border-b border-border hover:bg-muted/50">
+                          <td className="p-3 text-sm font-mono text-foreground">{report.reportNumber}</td>
+                          <td className="p-3 text-sm text-foreground">{report.property.address}</td>
+                          <td className="p-3 text-sm text-muted-foreground">
+                            {report.property.city}, {report.property.state} {report.property.zipCode}
+                          </td>
+                          <td className="p-3 text-sm text-foreground">${report.price.toFixed(2)}</td>
+                          <td className="p-3 text-sm text-foreground">{report._count.purchases}</td>
+                          <td className="p-3 text-sm text-muted-foreground">
+                            {format(new Date(report.generatedAt), 'MMM d, yyyy')}
+                          </td>
+                          <td className="p-3">
+                            <span className={`inline-block px-2 py-1 rounded text-xs ${
+                              report.status === 'GENERATED' 
+                                ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                                : report.status === 'PENDING'
+                                ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400'
+                                : 'bg-gray-500/10 text-gray-600 dark:text-gray-400'
+                            }`}>
+                              {report.status}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
           {activeTab === 'revenue' && (
-            <div className="bg-card border border-border rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-foreground mb-4">
-                Revenue Analytics
-              </h2>
-              <div className="space-y-4">
-                <div className="p-4 border border-border rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Total Revenue</p>
-                  <p className="text-3xl font-bold text-foreground">
-                    ${stats.totalRevenue.toFixed(2)}
-                  </p>
+            <div className="space-y-6">
+              {/* Revenue Summary */}
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-foreground mb-4">
+                  Revenue Summary
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="p-4 border border-border rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-1">Total Revenue</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      ${stats.totalRevenue.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="p-4 border border-border rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-1">Total Credits Sold</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      {stats.totalCredits}
+                    </p>
+                  </div>
+                  <div className="p-4 border border-border rounded-lg">
+                    <p className="text-sm text-muted-foreground mb-1">Avg Revenue per User</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      ${stats.totalUsers > 0 ? (stats.totalRevenue / stats.totalUsers).toFixed(2) : '0.00'}
+                    </p>
+                  </div>
                 </div>
-                <div className="p-4 border border-border rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Total Credits Sold</p>
-                  <p className="text-3xl font-bold text-foreground">
-                    {stats.totalCredits}
-                  </p>
+              </div>
+
+              {/* Credit Purchases Table */}
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-foreground mb-4">
+                  Credit Purchases ({stats.allCredits.length})
+                </h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">User</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Email</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Pack Type</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Credits</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Amount</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.allCredits.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="p-4 text-center text-muted-foreground">
+                            No credit purchases found
+                          </td>
+                        </tr>
+                      ) : (
+                        stats.allCredits.map((credit) => (
+                          <tr key={credit.id} className="border-b border-border hover:bg-muted/50">
+                            <td className="p-3 text-sm text-foreground">{credit.user.name}</td>
+                            <td className="p-3 text-sm text-muted-foreground">{credit.user.email}</td>
+                            <td className="p-3 text-sm text-foreground">{credit.packType}</td>
+                            <td className="p-3 text-sm text-foreground">{credit.credits}</td>
+                            <td className="p-3 text-sm text-green-600 dark:text-green-400 font-medium">
+                              ${credit.amount.toFixed(2)}
+                            </td>
+                            <td className="p-3 text-sm text-muted-foreground">
+                              {format(new Date(credit.purchasedAt), 'MMM d, yyyy h:mm a')}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="p-4 border border-border rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Average Revenue per User</p>
-                  <p className="text-3xl font-bold text-foreground">
-                    ${stats.totalUsers > 0 ? (stats.totalRevenue / stats.totalUsers).toFixed(2) : '0.00'}
-                  </p>
+              </div>
+
+              {/* Report Purchases Table */}
+              <div className="bg-card border border-border rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-foreground mb-4">
+                  Report Purchases ({stats.allPurchases.length})
+                </h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">User</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Email</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Report #</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Property</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Amount</th>
+                        <th className="text-left p-3 text-sm font-semibold text-foreground">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stats.allPurchases.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="p-4 text-center text-muted-foreground">
+                            No report purchases found
+                          </td>
+                        </tr>
+                      ) : (
+                        stats.allPurchases.map((purchase) => (
+                          <tr key={purchase.id} className="border-b border-border hover:bg-muted/50">
+                            <td className="p-3 text-sm text-foreground">{purchase.user.name}</td>
+                            <td className="p-3 text-sm text-muted-foreground">{purchase.user.email}</td>
+                            <td className="p-3 text-sm font-mono text-foreground">
+                              {purchase.report?.reportNumber || 'N/A'}
+                            </td>
+                            <td className="p-3 text-sm text-muted-foreground">
+                              {purchase.report?.property 
+                                ? `${purchase.report.property.address}, ${purchase.report.property.city}, ${purchase.report.property.state}`
+                                : 'N/A'}
+                            </td>
+                            <td className="p-3 text-sm text-green-600 dark:text-green-400 font-medium">
+                              ${purchase.amount.toFixed(2)}
+                            </td>
+                            <td className="p-3 text-sm text-muted-foreground">
+                              {format(new Date(purchase.purchasedAt), 'MMM d, yyyy h:mm a')}
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

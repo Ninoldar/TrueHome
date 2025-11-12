@@ -85,9 +85,70 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Get recent purchases (last 10)
-    const recentPurchases = await prisma.purchase.findMany({
-      take: 10,
+    // Get all users (for users table)
+    const allUsers = await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
+        _count: {
+          select: {
+            purchasedReports: true,
+            reportCredits: true,
+          },
+        },
+      },
+    })
+
+    // Get all reports (for reports table)
+    const allReports = await prisma.report.findMany({
+      orderBy: { generatedAt: 'desc' },
+      select: {
+        id: true,
+        reportNumber: true,
+        generatedAt: true,
+        price: true,
+        status: true,
+        property: {
+          select: {
+            address: true,
+            city: true,
+            state: true,
+            zipCode: true,
+          },
+        },
+        _count: {
+          select: {
+            purchases: true,
+          },
+        },
+      },
+    })
+
+    // Get all credit purchases (for revenue table)
+    const allCredits = await prisma.reportCredit.findMany({
+      where: { status: 'COMPLETED' },
+      orderBy: { purchasedAt: 'desc' },
+      select: {
+        id: true,
+        credits: true,
+        packType: true,
+        amount: true,
+        purchasedAt: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    })
+
+    // Get all purchases (for revenue table)
+    const allPurchases = await prisma.purchase.findMany({
       where: { status: 'COMPLETED' },
       orderBy: { purchasedAt: 'desc' },
       select: {
@@ -120,9 +181,13 @@ export async function GET(request: NextRequest) {
       totalReports,
       totalRevenue,
       totalCredits,
-      recentUsers,
-      recentCredits,
-      recentPurchases,
+      recentUsers: allUsers.slice(0, 10), // Keep recent for overview
+      recentCredits: allCredits.slice(0, 10), // Keep recent for overview
+      recentPurchases: allPurchases.slice(0, 10), // Keep recent for overview
+      allUsers, // Full list for users table
+      allReports, // Full list for reports table
+      allCredits, // Full list for credits
+      allPurchases, // Full list for purchases
     })
   } catch (error) {
     console.error('Error fetching admin stats:', error)
