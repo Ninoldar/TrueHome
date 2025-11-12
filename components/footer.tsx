@@ -89,19 +89,28 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Legal</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button 
+                  onClick={() => router.push('/privacy')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
                   Privacy Policy
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button 
+                  onClick={() => router.push('/terms')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
                   Terms of Service
-                </a>
+                </button>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <button 
+                  onClick={() => router.push('/cookie-policy')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
+                >
                   Cookie Policy
-                </a>
+                </button>
               </li>
             </ul>
           </div>
