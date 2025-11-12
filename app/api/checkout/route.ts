@@ -4,6 +4,13 @@ import { stripe, PRICING, type PackType } from '@/lib/stripe'
 
 export async function POST(request: NextRequest) {
   try {
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe is not configured. Please set STRIPE_SECRET_KEY.' },
+        { status: 500 }
+      )
+    }
+
     const session = await auth()
 
     if (!session?.user?.id) {
