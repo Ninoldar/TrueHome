@@ -55,11 +55,16 @@ export function CTA() {
         setLoading(true)
         const response = await fetch(`/api/properties/autocomplete?q=${encodeURIComponent(searchQuery)}`)
         const data = await response.json()
+        console.log('Autocomplete response:', data) // Debug log
         if (response.ok) {
-          setSuggestions(data.suggestions || [])
-          setShowSuggestions(data.suggestions && data.suggestions.length > 0)
+          const suggestionsList = data.suggestions || []
+          setSuggestions(suggestionsList)
+          setShowSuggestions(suggestionsList.length > 0)
+          console.log('Suggestions set:', suggestionsList.length, 'Show:', suggestionsList.length > 0) // Debug log
         } else {
           console.error('API error:', data)
+          setSuggestions([])
+          setShowSuggestions(false)
         }
       } catch (error) {
         console.error('Error fetching suggestions:', error)
@@ -176,22 +181,22 @@ export function CTA() {
               
               {/* Suggestions Dropdown */}
               {showSuggestions && suggestions.length > 0 && (
-                <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-lg shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl max-h-60 overflow-auto">
                   {suggestions.map((suggestion) => (
                     <button
                       key={suggestion.id}
                       type="button"
                       onClick={() => handleSuggestionClick(suggestion)}
-                      className="w-full text-left px-4 py-3 hover:bg-muted focus:bg-muted focus:outline-none transition-colors border-b border-border last:border-b-0"
+                      className="w-full text-left px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-800 focus:outline-none transition-colors border-b border-gray-200 dark:border-gray-700 last:border-b-0"
                     >
-                      <div className="font-medium text-foreground">
+                      <div className="font-medium text-gray-900 dark:text-gray-100">
                         {suggestion.address}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
                         {suggestion.city}, {suggestion.state} {suggestion.zipCode}
                       </div>
                       {suggestion.propertyType && (
-                        <div className="text-xs text-muted-foreground mt-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                           {suggestion.propertyType}
                         </div>
                       )}
