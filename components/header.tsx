@@ -1,8 +1,8 @@
 'use client'
 
 import { Home } from "lucide-react"
-import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import { UserMenu } from "@/components/user-menu"
 
 export function Header() {
   const router = useRouter()
@@ -44,12 +44,7 @@ export function Header() {
             </a>
           </nav>
 
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-              Sign In
-            </Button>
-            <Button size="sm">Get Started</Button>
-          </div>
+          <UserMenu />
         </div>
       </div>
     </header>
