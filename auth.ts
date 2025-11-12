@@ -59,12 +59,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       // Always fetch the latest role from database to ensure it's up to date
       if (token.id) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
-          select: { role: true },
-        })
-        if (dbUser) {
-          token.role = dbUser.role
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id as string },
+            select: { role: true },
+          })
+          if (dbUser) {
+            token.role = dbUser.role
+            console.log(`[JWT] Updated role for user ${token.id}: ${dbUser.role}`)
+          }
+        } catch (error) {
+          console.error('[JWT] Error fetching user role:', error)
         }
       }
       return token
@@ -73,6 +78,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string
         ;(session.user as any).role = token.role
+        console.log(`[Session] User ${session.user.email} role: ${token.role}`)
       }
       return session
     },

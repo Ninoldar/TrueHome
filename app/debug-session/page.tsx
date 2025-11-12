@@ -3,9 +3,15 @@
 import { useSession } from 'next-auth/react'
 import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
+import { useEffect, useState } from 'react'
 
 export default function DebugSessionPage() {
-  const { data: session, status } = useSession()
+  const { data: session, status, update } = useSession()
+  const [refreshing, setRefreshing] = useState(false)
+
+  useEffect(() => {
+    console.log('Session updated:', session)
+  }, [session])
 
   return (
     <main className="min-h-screen">
@@ -35,6 +41,22 @@ export default function DebugSessionPage() {
                 <p className="text-sm text-muted-foreground">Is Admin?</p>
                 <p className="font-mono text-lg">
                   {(session?.user as any)?.role === 'ADMIN' ? '✅ YES' : '❌ NO'}
+                </p>
+              </div>
+              <div className="pt-4 border-t border-border">
+                <button
+                  onClick={async () => {
+                    setRefreshing(true)
+                    await update()
+                    setRefreshing(false)
+                  }}
+                  disabled={refreshing}
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
+                >
+                  {refreshing ? 'Refreshing...' : 'Refresh Session'}
+                </button>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Click to force refresh your session from the database
                 </p>
               </div>
             </div>
