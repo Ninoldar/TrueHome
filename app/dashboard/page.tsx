@@ -46,6 +46,11 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchSuggestions, setSearchSuggestions] = useState<any[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
+  const [creditBalance, setCreditBalance] = useState({
+    availableCredits: 0,
+    totalCredits: 0,
+    usedCredits: 0,
+  })
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -55,6 +60,7 @@ export default function DashboardPage() {
 
     if (status === 'authenticated') {
       fetchPurchases()
+      fetchCreditBalance()
     }
   }, [status, router])
 
@@ -69,6 +75,22 @@ export default function DashboardPage() {
       console.error('Error fetching purchases:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchCreditBalance = async () => {
+    try {
+      const response = await fetch('/api/credits/balance')
+      if (response.ok) {
+        const data = await response.json()
+        setCreditBalance({
+          availableCredits: data.availableCredits || 0,
+          totalCredits: data.totalCredits || 0,
+          usedCredits: data.usedCredits || 0,
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching credit balance:', error)
     }
   }
 
@@ -179,16 +201,26 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
-                    <Clock className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                    <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Member Since</p>
+                    <p className="text-sm text-muted-foreground">Available Credits</p>
                     <p className="text-2xl font-bold text-foreground">
-                      {session.user?.email ? 'Active' : '—'}
+                      {creditBalance.availableCredits}
                     </p>
                   </div>
                 </div>
               </div>
+              {creditBalance.availableCredits === 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-3"
+                  onClick={() => router.push('/pricing')}
+                >
+                  Buy Credits
+                </Button>
+              )}
             </div>
           </div>
 

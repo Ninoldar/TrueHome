@@ -33,15 +33,18 @@ export function Header() {
             >
               Features
             </button>
-            <button
-              onClick={() => router.push('/benefits')}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Benefits
-            </button>
-            <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Pricing
-            </a>
+                <button
+                  onClick={() => router.push('/benefits')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Benefits
+                </button>
+                <button
+                  onClick={() => router.push('/pricing')}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Pricing
+                </button>
           </nav>
 
           <UserMenu />

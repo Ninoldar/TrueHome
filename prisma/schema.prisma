@@ -27,6 +27,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   purchasedReports Purchase[]
+  reportCredits ReportCredit[]
   
   @@map("users")
 }
@@ -175,6 +176,7 @@ model Report {
   
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   purchases Purchase[]
+  creditUsages CreditUsage[]
   
   @@map("reports")
 }
@@ -192,6 +194,36 @@ model Purchase {
   report Report @relation(fields: [reportId], references: [id], onDelete: Cascade)
   
   @@map("purchases")
+}
+
+model ReportCredit {
+  id          String   @id @default(cuid())
+  userId      String
+  credits     Int      // Number of report credits
+  packType    String   // SINGLE, PACK_3, PACK_5, PACK_10
+  amount      Float    // Total amount paid
+  paymentId   String?  // Payment processor transaction ID
+  status      String   @default("PENDING") // PENDING, COMPLETED, FAILED, REFUNDED
+  purchasedAt DateTime @default(now())
+  expiresAt   DateTime? // Optional expiration date
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usedCredits CreditUsage[]
+  
+  @@map("report_credits")
+}
+
+model CreditUsage {
+  id            String   @id @default(cuid())
+  creditId      String
+  reportId      String
+  usedAt        DateTime @default(now())
+  
+  credit ReportCredit @relation(fields: [creditId], references: [id], onDelete: Cascade)
+  report Report      @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  
+  @@unique([creditId, reportId])
+  @@map("credit_usage")
 }
 
 model TitleIssue {
