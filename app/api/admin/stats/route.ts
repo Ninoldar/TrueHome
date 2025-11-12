@@ -4,7 +4,9 @@ import { prisma } from '@/lib/db'
 
 export async function GET(request: NextRequest) {
   try {
+    console.log('[Admin Stats] Starting request...')
     const session = await auth()
+    console.log('[Admin Stats] Session:', session?.user?.id ? 'Authenticated' : 'Not authenticated')
 
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -14,10 +16,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user is admin
+    console.log('[Admin Stats] Checking admin role...')
     const user = await prisma.user.findUnique({
       where: { id: session.user.id as string },
       select: { role: true },
     })
+    console.log('[Admin Stats] User role:', user?.role)
 
     if (!user || user.role !== 'ADMIN') {
       return NextResponse.json(
@@ -26,6 +30,8 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    console.log('[Admin Stats] Admin verified, fetching data...')
+
     // Get today's date range (start of today to now)
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -33,20 +39,35 @@ export async function GET(request: NextRequest) {
     tomorrow.setDate(tomorrow.getDate() + 1)
 
     // Get total counts
+    console.log('[Admin Stats] Fetching total counts...')
     const [totalUsers, totalReports, creditsForRevenue, purchasesForRevenue] = await Promise.all([
-      prisma.user.count(),
-      prisma.report.count(),
+      prisma.user.count().catch((err) => {
+        console.error('[Admin Stats] Error counting users:', err)
+        return 0
+      }),
+      prisma.report.count().catch((err) => {
+        console.error('[Admin Stats] Error counting reports:', err)
+        return 0
+      }),
       prisma.reportCredit.findMany({
         where: { status: 'COMPLETED' },
         select: { credits: true, amount: true },
+      }).catch((err) => {
+        console.error('[Admin Stats] Error fetching credits:', err)
+        return []
       }),
       prisma.purchase.findMany({
         where: { status: 'COMPLETED' },
         select: { amount: true },
+      }).catch((err) => {
+        console.error('[Admin Stats] Error fetching purchases:', err)
+        return []
       }),
     ])
+    console.log('[Admin Stats] Total counts fetched:', { totalUsers, totalReports })
 
     // Get today's statistics
+    console.log('[Admin Stats] Fetching today\'s statistics...')
     const [
       usersToday,
       reportsToday,
@@ -61,6 +82,9 @@ export async function GET(request: NextRequest) {
             lt: tomorrow,
           },
         },
+      }).catch((err) => {
+        console.error('[Admin Stats] Error counting users today:', err)
+        return 0
       }),
       prisma.report.count({
         where: {
@@ -69,6 +93,9 @@ export async function GET(request: NextRequest) {
             lt: tomorrow,
           },
         },
+      }).catch((err) => {
+        console.error('[Admin Stats] Error counting reports today:', err)
+        return 0
       }),
       prisma.reportCredit.count({
         where: {
@@ -78,6 +105,9 @@ export async function GET(request: NextRequest) {
             lt: tomorrow,
           },
         },
+      }).catch((err) => {
+        console.error('[Admin Stats] Error counting credits today:', err)
+        return 0
       }),
       prisma.purchase.count({
         where: {
@@ -87,6 +117,9 @@ export async function GET(request: NextRequest) {
             lt: tomorrow,
           },
         },
+      }).catch((err) => {
+        console.error('[Admin Stats] Error counting purchases today:', err)
+        return 0
       }),
       prisma.reportCredit.aggregate({
         where: {
@@ -99,8 +132,12 @@ export async function GET(request: NextRequest) {
         _sum: {
           amount: true,
         },
+      }).catch((err) => {
+        console.error('[Admin Stats] Error aggregating revenue today:', err)
+        return { _sum: { amount: null } }
       }),
     ])
+    console.log('[Admin Stats] Today\'s stats fetched')
 
     // Calculate total revenue
     const creditRevenue = creditsForRevenue.reduce((sum, credit) => sum + credit.amount, 0)
@@ -109,6 +146,7 @@ export async function GET(request: NextRequest) {
     const totalCredits = creditsForRevenue.reduce((sum, credit) => sum + credit.credits, 0)
     
     // Calculate today's revenue
+    console.log('[Admin Stats] Calculating today\'s revenue...')
     const todayCreditRevenue = revenueToday._sum.amount || 0
     const todayPurchaseRevenue = await prisma.purchase.aggregate({
       where: {
@@ -121,10 +159,15 @@ export async function GET(request: NextRequest) {
       _sum: {
         amount: true,
       },
+    }).catch((err) => {
+      console.error('[Admin Stats] Error aggregating purchase revenue today:', err)
+      return { _sum: { amount: null } }
     })
     const todayRevenue = todayCreditRevenue + (todayPurchaseRevenue._sum.amount || 0)
+    console.log('[Admin Stats] Today\'s revenue calculated:', todayRevenue)
 
     // Get recent users (last 10)
+    console.log('[Admin Stats] Fetching recent users...')
     const recentUsers = await prisma.user.findMany({
       take: 10,
       orderBy: { createdAt: 'desc' },
@@ -141,6 +184,9 @@ export async function GET(request: NextRequest) {
           },
         },
       },
+    }).catch((err) => {
+      console.error('[Admin Stats] Error fetching recent users:', err)
+      return []
     })
 
     // Get recent credit purchases (last 10)
@@ -289,6 +335,9 @@ export async function GET(request: NextRequest) {
       totalUsers: response.totalUsers,
       totalReports: response.totalReports,
       totalRevenue: response.totalRevenue,
+      usersToday: response.usersToday,
+      reportsToday: response.reportsToday,
+      revenueToday: response.revenueToday,
       usersCount: response.allUsers.length,
       reportsCount: response.allReports.length,
       creditsCount: response.allCredits.length,
