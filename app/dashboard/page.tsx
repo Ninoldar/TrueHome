@@ -61,6 +61,17 @@ export default function DashboardPage() {
     if (status === 'authenticated') {
       fetchPurchases()
       fetchCreditBalance()
+      
+      // Check for payment success parameter
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('payment') === 'success') {
+        // Refresh credit balance after successful payment
+        setTimeout(() => {
+          fetchCreditBalance()
+          // Remove query parameter
+          router.replace('/dashboard')
+        }, 1000)
+      }
     }
   }, [status, router])
 

@@ -86,17 +86,36 @@ export default function PricingPage() {
   const router = useRouter()
   const { data: session } = useSession()
 
-  const handlePurchase = (packType: string, credits: number, price: number) => {
-    // For now, redirect to signup if not logged in
-    // Later, this will integrate with payment processing
+  const handlePurchase = async (packType: string, credits: number, price: number) => {
     if (!session) {
       router.push(`/signup?redirect=pricing&pack=${packType}`)
       return
     }
 
-    // TODO: Integrate with payment processor (Stripe)
-    // For now, we'll create a mock purchase flow
-    router.push(`/checkout?pack=${packType}&credits=${credits}&price=${price}`)
+    try {
+      // Create Stripe checkout session
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ packType }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create checkout session')
+      }
+
+      // Redirect to Stripe Checkout
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch (error) {
+      console.error('Error initiating checkout:', error)
+      alert('Failed to start checkout. Please try again.')
+    }
   }
 
   return (
