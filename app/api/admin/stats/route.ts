@@ -176,7 +176,7 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
+    const response = {
       totalUsers,
       totalReports,
       totalRevenue,
@@ -188,7 +188,19 @@ export async function GET(request: NextRequest) {
       allReports, // Full list for reports table
       allCredits, // Full list for credits
       allPurchases, // Full list for purchases
+    }
+
+    console.log('[Admin Stats API] Returning data:', {
+      totalUsers: response.totalUsers,
+      totalReports: response.totalReports,
+      totalRevenue: response.totalRevenue,
+      usersCount: response.allUsers.length,
+      reportsCount: response.allReports.length,
+      creditsCount: response.allCredits.length,
+      purchasesCount: response.allPurchases.length,
     })
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Error fetching admin stats:', error)
     return NextResponse.json(
