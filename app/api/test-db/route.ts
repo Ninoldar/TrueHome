@@ -7,6 +7,27 @@ import { prisma } from '@/lib/db'
  */
 export async function GET() {
   try {
+    // Debug: Check DATABASE_URL format
+    const dbUrl = process.env.DATABASE_URL || ''
+    const dbUrlPreview = dbUrl.substring(0, 30) + '...'
+    const isValidUrl = dbUrl.startsWith('postgresql://') || dbUrl.startsWith('postgres://')
+    
+    if (!isValidUrl && dbUrl) {
+      return NextResponse.json({
+        success: false,
+        error: 'Invalid DATABASE_URL format',
+        details: {
+          urlLength: dbUrl.length,
+          urlPreview: dbUrlPreview,
+          startsWithPostgres: dbUrl.startsWith('postgres'),
+          firstChars: dbUrl.substring(0, 50),
+          hasQuotes: dbUrl.includes('"') || dbUrl.includes("'"),
+          trimmedLength: dbUrl.trim().length,
+        },
+        fix: 'DATABASE_URL should start with postgresql:// or postgres://. Check for extra quotes or whitespace in Vercel environment variables.',
+      }, { status: 500 })
+    }
+    
     // Test 1: Count properties
     const propertyCount = await prisma.property.count()
     
