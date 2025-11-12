@@ -35,10 +35,10 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000  # For local development
 4. Copy your **Secret key** (starts with `sk_test_` or `sk_live_`)
    - **Important**: Never expose your secret key in client-side code!
 
-### 2. Set Up Webhook Endpoint
+### 2. Set Up Webhook Destination
 
 1. In Stripe Dashboard, go to **Developers** → **Webhooks**
-2. Click **Add endpoint**
+2. Click **Add destination** (or "Add endpoint" in older versions)
 3. Set the endpoint URL:
    - **Local development**: Use Stripe CLI (see below)
    - **Production**: `https://your-domain.vercel.app/api/webhooks/stripe`
@@ -95,9 +95,10 @@ The CLI will output a webhook signing secret. Use this as your `STRIPE_WEBHOOK_S
 
 ### 2. Update Webhook URL
 
-1. In Stripe Dashboard, update your webhook endpoint URL to:
+1. In Stripe Dashboard → **Webhooks**, find your destination/endpoint
+2. Update the URL to:
    `https://your-domain.vercel.app/api/webhooks/stripe`
-2. Make sure the webhook secret matches what you set in Vercel
+3. Make sure the webhook secret matches what you set in Vercel
 
 ### 3. Test Production Flow
 
