@@ -28,6 +28,10 @@ model User {
   sessions      Session[]
   purchasedReports Purchase[]
   reportCredits ReportCredit[]
+  propertyClaims PropertyClaim[]
+  createdProperties Property[] @relation("UserCreatedProperties")
+  workRecordsEntered WorkRecord[] @relation("UserEnteredWorkRecords")
+  maintenanceRecordsEntered MaintenanceRecord[] @relation("UserEnteredMaintenanceRecords")
   
   @@map("users")
 }
@@ -81,6 +85,8 @@ model Property {
   yearBuilt   Int?
   squareFeet  Int?
   lotSize     Float?
+  source      String   @default("SYSTEM") // SYSTEM, USER, PARTNER
+  createdByUserId String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
@@ -93,9 +99,28 @@ model Property {
   usageHistory       UsageRecord[]
   environmentalAssessments EnvironmentalAssessment[]
   maintenanceRecords MaintenanceRecord[]
+  claims            PropertyClaim[]
+  
+  createdByUser     User?     @relation("UserCreatedProperties", fields: [createdByUserId], references: [id], onDelete: SetNull)
   
   @@unique([address, city, state, zipCode])
   @@map("properties")
+}
+
+model PropertyClaim {
+  id              String   @id @default(cuid())
+  propertyId      String
+  userId          String
+  status          String   @default("ACTIVE") // ACTIVE, INACTIVE, PENDING
+  verificationStatus String @default("UNVERIFIED") // UNVERIFIED, VERIFIED, REJECTED
+  claimedAt       DateTime @default(now())
+  notes           String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, propertyId])
+  @@map("property_claims")
 }
 
 model Sale {
@@ -127,9 +152,12 @@ model WorkRecord {
   permitIssued  Boolean  @default(false)
   warrantyYears Int?    // Warranty period in years
   warrantyExpires DateTime?
+  dataSource    String   @default("SYSTEM") // SYSTEM, USER, COMPANY
+  enteredByUserId String?
   createdAt     DateTime @default(now())
   
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  enteredByUser User? @relation("UserEnteredWorkRecords", fields: [enteredByUserId], references: [id], onDelete: SetNull)
   
   @@map("work_records")
 }
@@ -283,9 +311,12 @@ model MaintenanceRecord {
   serviceProvider String?
   notes       String?
   cost        Float?
+  dataSource  String   @default("SYSTEM")
+  enteredByUserId String?
   createdAt   DateTime @default(now())
   
   property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  enteredByUser User? @relation("UserEnteredMaintenanceRecords", fields: [enteredByUserId], references: [id], onDelete: SetNull)
   
   @@map("maintenance_records")
 }

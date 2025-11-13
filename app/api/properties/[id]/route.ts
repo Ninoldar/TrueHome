@@ -15,6 +15,15 @@ export async function GET(
         },
         workHistory: {
           orderBy: { workDate: 'desc' },
+          include: {
+            enteredByUser: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
         },
         insuranceClaims: {
           orderBy: { claimDate: 'desc' },
@@ -33,6 +42,26 @@ export async function GET(
         },
         maintenanceRecords: {
           orderBy: { serviceDate: 'desc' },
+          include: {
+            enteredByUser: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+        claims: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
         },
       },
     })

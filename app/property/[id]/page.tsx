@@ -14,6 +14,7 @@ interface Property {
   propertyType: string | null
   yearBuilt: number | null
   squareFeet: number | null
+  source: string
   salesHistory: Array<{
     id: string
     saleDate: string
@@ -30,6 +31,12 @@ interface Property {
     workDate: string
     cost: number | null
     warrantyExpires: string | null
+    dataSource: string
+    enteredByUser?: {
+      id: string
+      name: string | null
+      email: string | null
+    } | null
   }>
   insuranceClaims: Array<{
     id: string
@@ -44,6 +51,20 @@ interface Property {
     provider: string
     endDate: string
     isActive: boolean
+  }>
+  maintenanceRecords: Array<{
+    id: string
+    maintenanceType: string
+    serviceDate: string
+    serviceProvider: string | null
+    notes: string | null
+    cost: number | null
+    dataSource: string
+    enteredByUser?: {
+      id: string
+      name: string | null
+      email: string | null
+    } | null
   }>
 }
 
@@ -133,6 +154,11 @@ export default function PropertyPage() {
           <p className="text-lg text-muted-foreground">
             {property.city}, {property.state} {property.zipCode}
           </p>
+          {property.source === 'USER' && (
+            <span className="inline-flex items-center gap-2 mt-3 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              Self-entered property
+            </span>
+          )}
           {property.propertyType && (
             <p className="text-sm text-muted-foreground mt-1">
               {property.propertyType}
@@ -216,6 +242,16 @@ export default function PropertyPage() {
                           Warranty expires: {format(new Date(work.warrantyExpires), 'MMMM d, yyyy')}
                         </p>
                       )}
+                      {work.dataSource === 'USER' && (
+                        <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                          Self-entered
+                          {work.enteredByUser?.name && (
+                            <span className="text-muted-foreground">
+                              • {work.enteredByUser.name}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -223,6 +259,44 @@ export default function PropertyPage() {
             </div>
           ) : (
             <p className="text-muted-foreground">No work history available</p>
+          )}
+        </div>
+
+        {/* Maintenance Records */}
+        <div className="bg-card rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-semibold text-foreground mb-4">
+            Maintenance ({property.maintenanceRecords.length})
+          </h2>
+          {property.maintenanceRecords.length > 0 ? (
+            <div className="space-y-4">
+              {property.maintenanceRecords.map((record) => (
+                <div key={record.id} className="border-l-4 border-blue-500 pl-4 py-2">
+                  <div>
+                    <p className="font-semibold text-foreground">{record.maintenanceType}</p>
+                    {record.notes && (
+                      <p className="text-sm text-muted-foreground">{record.notes}</p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {format(new Date(record.serviceDate), 'MMMM d, yyyy')}
+                      {record.serviceProvider && ` • ${record.serviceProvider}`}
+                      {record.cost && ` • $${record.cost.toLocaleString()}`}
+                    </p>
+                    {record.dataSource === 'USER' && (
+                      <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                        Self-entered
+                        {record.enteredByUser?.name && (
+                          <span className="text-muted-foreground">
+                            • {record.enteredByUser.name}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-muted-foreground">No maintenance records available</p>
           )}
         </div>
 

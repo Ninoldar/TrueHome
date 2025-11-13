@@ -7,15 +7,17 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { 
-  FileText, 
-  Search, 
-  TrendingUp, 
-  Clock, 
+import {
+  FileText,
+  Search,
+  TrendingUp,
   MapPin,
   ArrowRight,
   Plus,
-  Eye
+  Eye,
+  Home,
+  ClipboardPlus,
+  CheckCircle,
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -38,6 +40,21 @@ interface Purchase {
   }
 }
 
+interface ClaimedProperty {
+  claimId: string
+  claimedAt: string
+  verificationStatus: string
+  property: {
+    id: string
+    address: string
+    city: string
+    state: string
+    zipCode: string
+    propertyType: string | null
+    source: string
+  }
+}
+
 export default function DashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -51,6 +68,27 @@ export default function DashboardPage() {
     totalCredits: 0,
     usedCredits: 0,
   })
+  const [claimedProperties, setClaimedProperties] = useState<ClaimedProperty[]>([])
+  const [claimingProperty, setClaimingProperty] = useState(false)
+  const [activeUpdatePropertyId, setActiveUpdatePropertyId] = useState<string | null>(null)
+  const [submittingUpdate, setSubmittingUpdate] = useState(false)
+  const [claimForm, setClaimForm] = useState({
+    address: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    propertyType: '',
+    yearBuilt: '',
+    squareFeet: '',
+    lotSize: '',
+  })
+  const [updateForm, setUpdateForm] = useState({
+    title: '',
+    description: '',
+    workDate: '',
+    contractor: '',
+    cost: '',
+  })
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -61,6 +99,7 @@ export default function DashboardPage() {
     if (status === 'authenticated') {
       fetchPurchases()
       fetchCreditBalance()
+      fetchClaimedProperties()
       
       // Check for payment success parameter
       const params = new URLSearchParams(window.location.search)
@@ -105,6 +144,18 @@ export default function DashboardPage() {
     }
   }
 
+  const fetchClaimedProperties = async () => {
+    try {
+      const response = await fetch('/api/properties/claims')
+      if (response.ok) {
+        const data = await response.json()
+        setClaimedProperties(data.properties || [])
+      }
+    } catch (error) {
+      console.error('Error fetching claimed properties:', error)
+    }
+  }
+
   // Autocomplete search
   useEffect(() => {
     if (searchQuery.length < 2) {
@@ -137,6 +188,114 @@ export default function DashboardPage() {
     e.preventDefault()
     if (searchSuggestions.length > 0) {
       router.push(`/property/${searchSuggestions[0].id}`)
+    }
+  }
+
+  const handleClaimInputChange = (field: string, value: string) => {
+    setClaimForm((prev) => ({
+      ...prev,
+      [field]: field === 'state' ? value.toUpperCase() : value,
+    }))
+  }
+
+  const handleClaimSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setClaimingProperty(true)
+    try {
+      const payload: Record<string, any> = {
+        address: claimForm.address.trim(),
+        city: claimForm.city.trim(),
+        state: claimForm.state.trim(),
+        zipCode: claimForm.zipCode.trim(),
+        propertyType: claimForm.propertyType.trim() || 'Unknown',
+      }
+
+      if (claimForm.yearBuilt) {
+        payload.yearBuilt = Number(claimForm.yearBuilt)
+      }
+      if (claimForm.squareFeet) {
+        payload.squareFeet = Number(claimForm.squareFeet)
+      }
+      if (claimForm.lotSize) {
+        payload.lotSize = Number(claimForm.lotSize)
+      }
+
+      const response = await fetch('/api/properties/claims', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to claim property')
+      }
+
+      setClaimForm({
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        propertyType: '',
+        yearBuilt: '',
+        squareFeet: '',
+        lotSize: '',
+      })
+      await fetchClaimedProperties()
+      alert('Property claimed successfully! You can now add updates to its history.')
+    } catch (error: any) {
+      console.error('Error claiming property:', error)
+      alert(error.message || 'Failed to claim property. Please try again.')
+    } finally {
+      setClaimingProperty(false)
+    }
+  }
+
+  const openUpdateForm = (propertyId: string) => {
+    setActiveUpdatePropertyId(propertyId)
+    setUpdateForm({
+      title: '',
+      description: '',
+      workDate: '',
+      contractor: '',
+      cost: '',
+    })
+  }
+
+  const handleUpdateSubmit = async (e: React.FormEvent, propertyId: string) => {
+    e.preventDefault()
+    if (!updateForm.title || !updateForm.description || !updateForm.workDate) {
+      alert('Please fill in the title, description, and date.')
+      return
+    }
+
+    setSubmittingUpdate(true)
+    try {
+      const response = await fetch('/api/properties/updates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          propertyId,
+          title: updateForm.title.trim(),
+          description: updateForm.description.trim(),
+          workDate: updateForm.workDate,
+          contractor: updateForm.contractor.trim() || undefined,
+          cost: updateForm.cost ? Number(updateForm.cost) : undefined,
+        }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to add update')
+      }
+
+      alert('Update added successfully! It is marked as self-entered.')
+      setActiveUpdatePropertyId(null)
+    } catch (error: any) {
+      console.error('Error adding update:', error)
+      alert(error.message || 'Failed to add update. Please try again.')
+    } finally {
+      setSubmittingUpdate(false)
     }
   }
 
@@ -233,6 +392,286 @@ export default function DashboardPage() {
                 </Button>
               )}
             </div>
+          </div>
+
+          {/* Claimed Properties */}
+          <div className="bg-card border border-border rounded-lg p-6 mb-8">
+            <div className="flex flex-col gap-6">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <Home className="w-5 h-5 text-primary" />
+                  <h2 className="text-xl font-semibold text-foreground">
+                    Claim Your Property
+                  </h2>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Claim your home to add updates, track services, and maintain its history. Claimed addresses appear in search results and are flagged as self-entered entries.
+                </p>
+              </div>
+
+              <form onSubmit={handleClaimSubmit} className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      Street Address
+                    </label>
+                    <Input
+                      value={claimForm.address}
+                      onChange={(e) => handleClaimInputChange('address', e.target.value)}
+                      placeholder="123 Main Street"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      Property Type
+                    </label>
+                    <Input
+                      value={claimForm.propertyType}
+                      onChange={(e) => handleClaimInputChange('propertyType', e.target.value)}
+                      placeholder="Single Family, Condo, etc."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      City
+                    </label>
+                    <Input
+                      value={claimForm.city}
+                      onChange={(e) => handleClaimInputChange('city', e.target.value)}
+                      placeholder="City"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">
+                        State
+                      </label>
+                      <Input
+                        value={claimForm.state}
+                        onChange={(e) => handleClaimInputChange('state', e.target.value.slice(0, 2))}
+                        placeholder="TX"
+                        required
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-sm font-medium text-muted-foreground mb-1">
+                        ZIP Code
+                      </label>
+                      <Input
+                        value={claimForm.zipCode}
+                        onChange={(e) => handleClaimInputChange('zipCode', e.target.value)}
+                        placeholder="75023"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      Year Built
+                    </label>
+                    <Input
+                      type="number"
+                      min="1800"
+                      max={new Date().getFullYear()}
+                      value={claimForm.yearBuilt}
+                      onChange={(e) => handleClaimInputChange('yearBuilt', e.target.value)}
+                      placeholder="1998"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      Square Feet
+                    </label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={claimForm.squareFeet}
+                      onChange={(e) => handleClaimInputChange('squareFeet', e.target.value)}
+                      placeholder="2500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-muted-foreground mb-1">
+                      Lot Size (acres)
+                    </label>
+                    <Input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={claimForm.lotSize}
+                      onChange={(e) => handleClaimInputChange('lotSize', e.target.value)}
+                      placeholder="0.25"
+                    />
+                  </div>
+                </div>
+
+                <Button type="submit" size="lg" disabled={claimingProperty}>
+                  {claimingProperty ? 'Claiming...' : 'Claim this Property'}
+                </Button>
+              </form>
+            </div>
+
+            {claimedProperties.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  Your Claimed Properties ({claimedProperties.length})
+                </h3>
+                <div className="space-y-4">
+                  {claimedProperties.map((claimed) => (
+                    <div
+                      key={claimed.claimId}
+                      className="border border-border rounded-lg p-5 bg-muted/30"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                        <div>
+                          <div className="flex items-center gap-3 mb-1">
+                            <h4 className="text-lg font-semibold text-foreground">
+                              {claimed.property.address}
+                            </h4>
+                            {claimed.verificationStatus === 'VERIFIED' ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full">
+                                <CheckCircle className="w-3 h-3" />
+                                Verified
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-xs font-medium text-primary bg-primary/10 px-2 py-1 rounded-full">
+                                Self-entered
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {claimed.property.city}, {claimed.property.state}{' '}
+                            {claimed.property.zipCode}
+                          </p>
+                          {claimed.property.propertyType && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {claimed.property.propertyType}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground mt-2">
+                            Claimed on {format(new Date(claimed.claimedAt), 'MMM d, yyyy')}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => router.push(`/property/${claimed.property.id}`)}
+                          >
+                            View Property
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openUpdateForm(claimed.property.id)}
+                          >
+                            <ClipboardPlus className="w-4 h-4 mr-2" />
+                            Add Update
+                          </Button>
+                        </div>
+                      </div>
+
+                      {activeUpdatePropertyId === claimed.property.id && (
+                        <form
+                          className="mt-4 border-t border-border pt-4 space-y-4"
+                          onSubmit={(e) => handleUpdateSubmit(e, claimed.property.id)}
+                        >
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                                Update Title
+                              </label>
+                              <Input
+                                value={updateForm.title}
+                                onChange={(e) =>
+                                  setUpdateForm((prev) => ({ ...prev, title: e.target.value }))
+                                }
+                                placeholder="Roof replacement, HVAC service, etc."
+                                required
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                                Date Performed
+                              </label>
+                              <Input
+                                type="date"
+                                value={updateForm.workDate}
+                                onChange={(e) =>
+                                  setUpdateForm((prev) => ({ ...prev, workDate: e.target.value }))
+                                }
+                                required
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-muted-foreground mb-1">
+                              Description / Notes
+                            </label>
+                            <textarea
+                              value={updateForm.description}
+                              onChange={(e) =>
+                                setUpdateForm((prev) => ({ ...prev, description: e.target.value }))
+                              }
+                              placeholder="Describe the work or maintenance performed. Include any details you want to remember."
+                              required
+                              className="w-full min-h-[120px] rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                            />
+                          </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                                Contractor / Company (optional)
+                              </label>
+                              <Input
+                                value={updateForm.contractor}
+                                onChange={(e) =>
+                                  setUpdateForm((prev) => ({ ...prev, contractor: e.target.value }))
+                                }
+                                placeholder="Company or person who did the work"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-muted-foreground mb-1">
+                                Cost (optional)
+                              </label>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={updateForm.cost}
+                                onChange={(e) =>
+                                  setUpdateForm((prev) => ({ ...prev, cost: e.target.value }))
+                                }
+                                placeholder="e.g. 2500"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button type="submit" size="sm" disabled={submittingUpdate}>
+                              {submittingUpdate ? 'Saving...' : 'Save Update'}
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setActiveUpdatePropertyId(null)}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </form>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Search Section */}
