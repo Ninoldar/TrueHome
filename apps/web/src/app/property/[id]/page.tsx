@@ -713,7 +713,7 @@ export default function PropertyPage() {
             <section className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-xl font-semibold mb-4">Generate Report</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Create a comprehensive PDF report of this property's history
+                Create a comprehensive PDF report of this property&apos;s history
               </p>
               <button className="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
                 Generate Report

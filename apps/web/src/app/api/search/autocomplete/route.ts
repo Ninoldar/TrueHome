@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { prisma } from '../../../../lib/prisma'
 
 export async function GET(request: NextRequest) {
@@ -22,18 +23,18 @@ export async function GET(request: NextRequest) {
     const properties = await prisma.property.findMany({
       where: {
         OR: [
-          { address: { contains: rawQuery, mode: 'insensitive' } },
-          { city: { contains: rawQuery, mode: 'insensitive' } },
-          { zipCode: { contains: rawQuery, mode: 'insensitive' } },
+          { address: { contains: rawQuery, mode: Prisma.QueryMode.insensitive } },
+          { city: { contains: rawQuery, mode: Prisma.QueryMode.insensitive } },
+          { zipCode: { contains: rawQuery, mode: Prisma.QueryMode.insensitive } },
           {
-            address: { contains: addressPart, mode: 'insensitive' },
-            ...(cityPart && { city: { contains: cityPart, mode: 'insensitive' } }),
+            address: { contains: addressPart, mode: Prisma.QueryMode.insensitive },
+            ...(cityPart && { city: { contains: cityPart, mode: Prisma.QueryMode.insensitive } }),
           },
           ...(firstToken
             ? [{
-                address: { contains: firstToken, mode: 'insensitive' },
+                address: { contains: firstToken, mode: Prisma.QueryMode.insensitive },
                 ...(remainingTokens && {
-                  city: { contains: remainingTokens, mode: 'insensitive' },
+                  city: { contains: remainingTokens, mode: Prisma.QueryMode.insensitive },
                 }),
               }]
             : []),

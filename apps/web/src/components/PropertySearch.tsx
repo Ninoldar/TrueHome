@@ -162,7 +162,6 @@ export default function PropertySearch() {
               placeholder="Enter address, city, ZIP code, or APN..."
               className="w-full px-5 py-4 pr-12 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder:text-gray-400 shadow-sm transition-all"
               aria-autocomplete="list"
-              aria-expanded={showSuggestions}
               aria-busy={isFetchingSuggestions}
             />
             {isFetchingSuggestions && (

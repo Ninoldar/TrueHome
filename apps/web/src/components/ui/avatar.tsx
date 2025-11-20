@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable @next/next/no-img-element */
 
 import * as React from 'react'
 import { cn } from '../../lib/utils'
@@ -27,10 +28,11 @@ interface AvatarImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 }
 
 const AvatarImage = React.forwardRef<HTMLImageElement, AvatarImageProps>(
-  ({ className, ...props }, ref) => (
+  ({ className, alt = 'User avatar', ...props }, ref) => (
     <img
       ref={ref}
-      className={cn('aspect-square size-full', className)}
+      className={cn('aspect-square size-full rounded-full object-cover', className)}
+      alt={alt}
       {...props}
     />
   )
