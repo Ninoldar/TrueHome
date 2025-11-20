@@ -101,7 +101,7 @@ model Sale {
   buyerName   String?
   sellerName  String?
   documentRef String?  // Reference to deed document
-  source      String
+  source      String?  @default("unknown") // Source of this record
   
   property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   
@@ -158,7 +158,7 @@ model ContractorCompany {
   insuranceClaims   InsuranceClaim[] // Claims where this contractor did work
   
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime @default(now()) @updatedAt
   
   @@index([name])
   @@index([licenseNumber])
@@ -242,7 +242,7 @@ model InsuranceClaim {
   workEvents        WorkEvent[] // Work events related to this claim
   
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt         DateTime @default(now()) @updatedAt
   
   @@index([propertyId])
   @@index([claimType])

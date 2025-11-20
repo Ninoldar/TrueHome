@@ -7,7 +7,10 @@ import { config } from 'dotenv'
 // Load environment variables
 config({ path: resolve(process.cwd(), '.env.local') })
 
-const prisma = new PrismaClient()
+// Configure Prisma with connection pool settings
+const prisma = new PrismaClient({
+  log: ['error', 'warn'],
+})
 
 interface CollinCADRow {
   // Address fields
@@ -15,11 +18,8 @@ interface CollinCADRow {
   situsAddress?: string
   situsCity?: string
   situsZip?: string
-  situsState?: string
-  
-  // Property identification
-  accountNumber?: string
-  parcelNumber?: string
+  geoID?: string
+  propID?: string
   
   // Property details
   imprvYearBuilt?: string
@@ -32,10 +32,21 @@ interface CollinCADRow {
   bathrooms?: string
   propertyType?: string
   propertyUse?: string
-  
-  // Additional fields
-  ownerName?: string
-  ownerType?: string
+}
+
+interface PropertyData {
+  address: string
+  city: string
+  state: string
+  zipCode: string
+  county: string
+  apn?: string
+  yearBuilt?: number
+  livingArea?: number
+  lotSize?: number
+  bedrooms?: number
+  bathrooms?: number
+  propertyType?: string
 }
 
 function cleanAddress(address: string | undefined): string | null {
@@ -86,108 +97,118 @@ function parsePropertyType(propertyUse: string | undefined, propertyType: string
   return null
 }
 
-async function importCSV(filePath: string) {
-  console.log(`📂 Reading CSV file: ${filePath}`)
+function processRow(row: CollinCADRow): PropertyData | null {
+  // Extract address
+  const address = cleanAddress(row.situsConcatShort || row.situsAddress)
+  if (!address) return null
+
+  // Extract city and zip
+  const city = row.situsCity?.trim() || 'Unknown'
+  const zipCode = row.situsZip?.trim() || ''
   
+  // Validate required fields
+  if (!zipCode || zipCode.length < 5) return null
+
+  // Extract APN (Assessor's Parcel Number) - geoID is the APN in this CSV
+  const apn = row.geoID?.trim() || row.propID?.trim() || undefined
+
+  // Extract property details
+  const yearBuilt = parseInteger(row.imprvYearBuilt)
+  const livingArea = parseNumber(row.imprvMainArea)
+  
+  // Lot size - prefer sqft, fallback to converting acres
+  let lotSize: number | undefined = undefined
+  if (row.landSizeSqft) {
+    lotSize = parseNumber(row.landSizeSqft) || undefined
+  } else if (row.landSizeAcres) {
+    lotSize = acresToSqft(row.landSizeAcres) || undefined
+  }
+
+  const bedrooms = parseInteger(row.bedrooms) || undefined
+  const bathrooms = parseNumber(row.bathrooms) || undefined
+  const propertyType = parsePropertyType(row.propertyUse, row.propertyType) || undefined
+
+  // Prepare property data
+  const propertyData: PropertyData = {
+    address,
+    city,
+    state: 'TX',
+    zipCode,
+    county: 'Collin',
+  }
+  
+  // Add optional fields only if they have values
+  if (apn) propertyData.apn = apn
+  if (yearBuilt) propertyData.yearBuilt = yearBuilt
+  if (livingArea) propertyData.livingArea = livingArea
+  if (lotSize) propertyData.lotSize = lotSize
+  if (bedrooms) propertyData.bedrooms = bedrooms
+  if (bathrooms) propertyData.bathrooms = bathrooms
+  if (propertyType) propertyData.propertyType = propertyType
+
+  return propertyData
+}
+
+async function processBatch(batch: PropertyData[]): Promise<{ imported: number; skipped: number; errors: number }> {
   let imported = 0
   let skipped = 0
   let errors = 0
-  let processed = 0
 
-  return new Promise<void>((resolve, reject) => {
-    const stream = createReadStream(filePath)
-      .pipe(parse({
-        columns: true,
-        skip_empty_lines: true,
-        trim: true,
-        relax_column_count: true,
-      }))
+  if (batch.length === 0) return { imported, skipped, errors }
 
-    stream.on('data', async (row: CollinCADRow) => {
-      processed++
-      
+  try {
+    // Get all APNs and addresses from batch
+    const apns = batch.filter(p => p.apn).map(p => p.apn!)
+    const addresses = batch.map(p => ({
+      address: p.address.toLowerCase(),
+      city: p.city.toLowerCase(),
+      zipCode: p.zipCode,
+    }))
+
+    // Find existing properties in bulk
+    const existingProperties = await prisma.property.findMany({
+      where: {
+        OR: [
+          ...(apns.length > 0 ? [{ apn: { in: apns } }] : []),
+          // For addresses, we'll check individually since Prisma doesn't support complex array matching
+        ],
+      },
+      select: {
+        id: true,
+        apn: true,
+        address: true,
+        city: true,
+        zipCode: true,
+      },
+    })
+
+    // Create lookup maps
+    const byApn = new Map(existingProperties.filter(p => p.apn).map(p => [p.apn!.toLowerCase(), p]))
+    const byAddress = new Map(
+      existingProperties.map(p => [
+        `${p.address.toLowerCase()}|${p.city.toLowerCase()}|${p.zipCode}`,
+        p,
+      ])
+    )
+
+    // Process each property in the batch
+    for (const propertyData of batch) {
       try {
-        // Extract address
-        const address = cleanAddress(row.situsConcatShort || row.situsAddress)
-        if (!address) {
-          skipped++
-          if (processed % 1000 === 0) {
-            console.log(`   Processed ${processed} rows... (${imported} imported, ${skipped} skipped, ${errors} errors)`)
-          }
-          return
-        }
-
-        // Extract city and zip
-        const city = row.situsCity?.trim() || 'Unknown'
-        const zipCode = row.situsZip?.trim() || ''
-        const state = 'TX' // Texas data, always TX
-
-        // Extract APN (Assessor's Parcel Number) - geoID is the APN in this CSV
-        const apn = row.geoID?.trim() || row.propID?.trim() || null
-
-        // Extract property details
-        const yearBuilt = parseInteger(row.imprvYearBuilt)
-        const livingArea = parseNumber(row.imprvMainArea)
-        
-        // Lot size - prefer sqft, fallback to converting acres
-        let lotSize: number | null = null
-        if (row.landSizeSqft) {
-          lotSize = parseNumber(row.landSizeSqft)
-        } else if (row.landSizeAcres) {
-          lotSize = acresToSqft(row.landSizeAcres)
-        }
-
-        const bedrooms = parseInteger(row.bedrooms)
-        const bathrooms = parseNumber(row.bathrooms)
-        const propertyType = parsePropertyType(row.propertyUse, row.propertyType)
-
-        // Validate required fields
-        if (!zipCode || zipCode.length < 5) {
-          skipped++
-          if (processed % 1000 === 0) {
-            console.log(`   Processed ${processed} rows... (${imported} imported, ${skipped} skipped, ${errors} errors)`)
-          }
-          return
-        }
-
-        // Prepare property data
-        const propertyData: any = {
-          address,
-          city,
-          state,
-          zipCode,
-          county: 'Collin',
-        }
-        
-        // Add optional fields only if they have values
-        if (apn) propertyData.apn = apn
-        if (yearBuilt) propertyData.yearBuilt = yearBuilt
-        if (livingArea) propertyData.livingArea = livingArea
-        if (lotSize) propertyData.lotSize = lotSize
-        if (bedrooms) propertyData.bedrooms = bedrooms
-        if (bathrooms) propertyData.bathrooms = bathrooms
-        if (propertyType) propertyData.propertyType = propertyType
-
-        // Check if property already exists (by APN first, then by address)
         let existing = null
-        if (apn) {
-          existing = await prisma.property.findUnique({
-            where: { apn },
-          })
+
+        // Check by APN first
+        if (propertyData.apn) {
+          existing = byApn.get(propertyData.apn.toLowerCase())
         }
-        
+
+        // Check by address if not found by APN
         if (!existing) {
-          existing = await prisma.property.findFirst({
-            where: {
-              address: { equals: address, mode: 'insensitive' },
-              city: { equals: city, mode: 'insensitive' },
-              zipCode: { equals: zipCode },
-            },
-          })
+          const addressKey = `${propertyData.address.toLowerCase()}|${propertyData.city.toLowerCase()}|${propertyData.zipCode}`
+          existing = byAddress.get(addressKey)
         }
 
         if (existing) {
-          // Update existing property with new data
+          // Update existing property
           await prisma.property.update({
             where: { id: existing.id },
             data: propertyData,
@@ -201,19 +222,19 @@ async function importCSV(filePath: string) {
             })
             imported++
           } catch (err: any) {
-            // If unique constraint fails (e.g., duplicate APN), try to find and update
+            // If unique constraint fails, try to find and update
             if (err?.code === 'P2002') {
               try {
-                const found = apn 
-                  ? await prisma.property.findUnique({ where: { apn } })
+                const found = propertyData.apn
+                  ? await prisma.property.findUnique({ where: { apn: propertyData.apn } })
                   : await prisma.property.findFirst({
                       where: {
-                        address: { equals: address, mode: 'insensitive' },
-                        city: { equals: city, mode: 'insensitive' },
-                        zipCode: { equals: zipCode },
+                        address: { equals: propertyData.address, mode: 'insensitive' },
+                        city: { equals: propertyData.city, mode: 'insensitive' },
+                        zipCode: { equals: propertyData.zipCode },
                       },
                     })
-                
+
                 if (found) {
                   await prisma.property.update({
                     where: { id: found.id },
@@ -225,41 +246,128 @@ async function importCSV(filePath: string) {
                 }
               } catch (updateErr: any) {
                 errors++
-                if (errors <= 20 || errors % 1000 === 0) {
-                  console.error(`[Row ${processed}] Error updating property:`, updateErr?.message || updateErr?.code || String(updateErr).substring(0, 200))
-                }
               }
             } else {
               errors++
-              if (errors <= 20 || errors % 1000 === 0) {
-                const errorMsg = err?.message || err?.code || String(err).substring(0, 200)
-                console.error(`[Row ${processed}] Error creating property (${address}):`, errorMsg)
-              }
             }
           }
         }
-
-        if (processed % 1000 === 0) {
-          console.log(`   Processed ${processed} rows... (${imported} imported, ${skipped} skipped, ${errors} errors)`)
-        }
-      } catch (error: any) {
+      } catch (err: any) {
         errors++
-        if (errors <= 20 || errors % 1000 === 0) {
-          const errorMsg = error?.message || error?.code || String(error).substring(0, 200)
-          console.error(`[Row ${processed}] Processing error:`, errorMsg)
+      }
+    }
+  } catch (err: any) {
+    // If batch fails, process individually
+    console.error(`Batch processing error, falling back to individual processing:`, err?.message)
+    for (const propertyData of batch) {
+      try {
+        let existing = null
+        if (propertyData.apn) {
+          existing = await prisma.property.findUnique({ where: { apn: propertyData.apn } })
         }
-        if (processed % 1000 === 0) {
-          console.log(`   Processed ${processed} rows... (${imported} imported, ${skipped} skipped, ${errors} errors)`)
+        if (!existing) {
+          existing = await prisma.property.findFirst({
+            where: {
+              address: { equals: propertyData.address, mode: 'insensitive' },
+              city: { equals: propertyData.city, mode: 'insensitive' },
+              zipCode: { equals: propertyData.zipCode },
+            },
+          })
         }
+
+        if (existing) {
+          await prisma.property.update({
+            where: { id: existing.id },
+            data: propertyData,
+          })
+          imported++
+        } else {
+          await prisma.property.create({ data: propertyData })
+          imported++
+        }
+      } catch (err: any) {
+        errors++
+      }
+    }
+  }
+
+  return { imported, skipped, errors }
+}
+
+async function importCSV(filePath: string) {
+  console.log(`📂 Reading CSV file: ${filePath}`)
+  
+  let totalImported = 0
+  let totalSkipped = 0
+  let totalErrors = 0
+  let processed = 0
+  const BATCH_SIZE = 50 // Process 50 rows at a time
+  const BATCH_DELAY = 200 // 200ms delay between batches
+
+  let currentBatch: PropertyData[] = []
+
+  return new Promise<void>((resolve, reject) => {
+    const stream = createReadStream(filePath)
+      .pipe(parse({
+        columns: true,
+        skip_empty_lines: true,
+        trim: true,
+        relax_column_count: true,
+      }))
+
+    const processCurrentBatch = async () => {
+      if (currentBatch.length === 0) return
+
+      const batch = [...currentBatch]
+      currentBatch = []
+
+      const result = await processBatch(batch)
+      totalImported += result.imported
+      totalSkipped += result.skipped
+      totalErrors += result.errors
+
+      if (processed % 1000 === 0 || totalImported % 100 === 0) {
+        console.log(`   Processed ${processed} rows... (${totalImported} imported, ${totalSkipped} skipped, ${totalErrors} errors)`)
+      }
+
+      // Delay before next batch to avoid overwhelming connection pool
+      await new Promise(resolve => setTimeout(resolve, BATCH_DELAY))
+    }
+
+    stream.on('data', async (row: CollinCADRow) => {
+      processed++
+      
+      const propertyData = processRow(row)
+      if (propertyData) {
+        currentBatch.push(propertyData)
+      } else {
+        totalSkipped++
+      }
+
+      // Process batch when it reaches the size limit
+      if (currentBatch.length >= BATCH_SIZE) {
+        // Pause the stream while processing
+        stream.pause()
+        await processCurrentBatch()
+        stream.resume()
+      }
+
+      if (processed % 1000 === 0) {
+        console.log(`   Processed ${processed} rows... (${totalImported} imported, ${totalSkipped} skipped, ${totalErrors} errors)`)
       }
     })
 
     stream.on('end', async () => {
+      // Process remaining batch
+      if (currentBatch.length > 0) {
+        await processCurrentBatch()
+      }
+
       console.log('\n✅ Import complete!')
       console.log(`   Total processed: ${processed}`)
-      console.log(`   Imported/Updated: ${imported}`)
-      console.log(`   Skipped: ${skipped}`)
-      console.log(`   Errors: ${errors}`)
+      console.log(`   Imported/Updated: ${totalImported}`)
+      console.log(`   Skipped: ${totalSkipped}`)
+      console.log(`   Errors: ${totalErrors}`)
       
       await prisma.$disconnect()
       resolve()
@@ -290,4 +398,3 @@ importCSV(filePath)
     console.error('❌ Import failed:', error)
     process.exit(1)
   })
-
