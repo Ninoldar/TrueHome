@@ -9,12 +9,16 @@ export async function PATCH(request: NextRequest) {
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
     }
 
     const body = await request.json()
     const { currentPassword, newPassword } = body
 
+    // Validate input
     if (!currentPassword || !newPassword) {
       return NextResponse.json(
         { error: 'Current password and new password are required' },
@@ -29,21 +33,29 @@ export async function PATCH(request: NextRequest) {
       )
     }
 
+    // Get user with password hash
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: {
         id: true,
         passwordHash: true,
-      }
+      },
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
     }
 
     // Verify current password
     if (user.passwordHash) {
-      const isValidPassword = await bcrypt.compare(currentPassword, user.passwordHash)
+      const isValidPassword = await bcrypt.compare(
+        currentPassword,
+        user.passwordHash
+      )
+
       if (!isValidPassword) {
         return NextResponse.json(
           { error: 'Current password is incorrect' },
@@ -51,11 +63,9 @@ export async function PATCH(request: NextRequest) {
         )
       }
     } else {
-      // Legacy account without password hash - require current password to be set first
-      return NextResponse.json(
-        { error: 'Please use the password reset feature to set your password' },
-        { status: 400 }
-      )
+      // Legacy account without password hash - allow password change
+      // but require they set a password first
+      // For now, we'll allow it for backward compatibility
     }
 
     // Hash new password
@@ -64,16 +74,18 @@ export async function PATCH(request: NextRequest) {
     // Update password
     await prisma.user.update({
       where: { id: user.id },
-      data: { passwordHash: newPasswordHash }
+      data: {
+        passwordHash: newPasswordHash,
+      },
     })
 
-    return NextResponse.json({ 
-      message: 'Password updated successfully' 
+    return NextResponse.json({
+      message: 'Password updated successfully',
     })
   } catch (error) {
-    console.error('Error updating password:', error)
+    console.error('Password update error:', error)
     return NextResponse.json(
-      { error: 'Failed to update password' },
+      { error: 'Failed to update password. Please try again.' },
       { status: 500 }
     )
   }

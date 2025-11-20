@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, User, LogOut } from "lucide-react"
+import { Home, User, LogOut, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -84,6 +84,7 @@ export function Header() {
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={() => router.push('/settings')}>
+                    <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />

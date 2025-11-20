@@ -1,70 +1,46 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { User, Lock, Loader2 } from "lucide-react"
-
-interface UserProfile {
-  id: string
-  email: string
-  name: string | null
-  role: string
-}
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Settings, User, Lock, Save, Loader2 } from "lucide-react"
 
 export default function SettingsPage() {
-  const { data: session, status } = useSession()
+  const { data: session, update } = useSession()
   const router = useRouter()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   
-  // Profile form state
+  // Profile fields
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   
-  // Password form state
+  // Password fields
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (session?.user) {
+      setName(session.user.name || '')
+      setEmail(session.user.email || '')
+      setFetching(false)
+    } else if (session === null) {
+      // Not authenticated, redirect to sign in
       router.push('/signin')
-      return
     }
+  }, [session, router])
 
-    if (status === 'authenticated') {
-      fetchProfile()
-    }
-  }, [status, router])
-
-  const fetchProfile = async () => {
-    try {
-      const response = await fetch('/api/user/profile')
-      if (response.ok) {
-        const data = await response.json()
-        setProfile(data.user)
-        setName(data.user.name || '')
-        setEmail(data.user.email)
-      }
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSaving(true)
+    setLoading(true)
     setError('')
     setSuccess('')
 
@@ -74,36 +50,45 @@ export default function SettingsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ name }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
         setError(data.error || 'Failed to update profile')
-      } else {
-        setSuccess('Profile updated successfully!')
-        setProfile(data.user)
-        // Clear form
-        setName(data.user.name || '')
-        setEmail(data.user.email)
+        setLoading(false)
+        return
       }
+
+      // Update session to reflect changes
+      await update()
+      setSuccess('Profile updated successfully!')
+      setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
+      console.error('Profile update error:', err)
       setError('An error occurred. Please try again.')
     } finally {
-      setSaving(false)
+      setLoading(false)
     }
   }
 
-  const handleUpdatePassword = async (e: React.FormEvent) => {
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSaving(true)
+    setLoading(true)
     setError('')
     setSuccess('')
 
+    // Validate passwords
+    if (newPassword.length < 6) {
+      setError('New password must be at least 6 characters long')
+      setLoading(false)
+      return
+    }
+
     if (newPassword !== confirmPassword) {
       setError('New passwords do not match')
-      setSaving(false)
+      setLoading(false)
       return
     }
 
@@ -113,56 +98,70 @@ export default function SettingsPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ currentPassword, newPassword }),
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
       })
 
       const data = await response.json()
 
       if (!response.ok) {
         setError(data.error || 'Failed to update password')
-      } else {
-        setSuccess('Password updated successfully!')
-        // Clear form
-        setCurrentPassword('')
-        setNewPassword('')
-        setConfirmPassword('')
+        setLoading(false)
+        return
       }
+
+      // Clear password fields on success
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+      setSuccess('Password updated successfully!')
+      setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
+      console.error('Password update error:', err)
       setError('An error occurred. Please try again.')
     } finally {
-      setSaving(false)
+      setLoading(false)
     }
   }
 
-  if (loading || status === 'loading') {
+  if (fetching) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <main className="min-h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+        <Footer />
       </main>
     )
   }
 
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Header />
       <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-4xl">
-          <h1 className="text-4xl font-bold mb-8">Settings</h1>
+          <div className="mb-8">
+            <h1 className="text-4xl font-bold mb-2">Settings</h1>
+            <p className="text-muted-foreground">Manage your account settings and preferences</p>
+          </div>
 
           {error && (
-            <div className="mb-6 p-4 bg-destructive/10 text-destructive rounded-lg">
+            <div className="mb-6 p-4 bg-destructive/10 text-destructive rounded-lg border border-destructive/20">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="mb-6 p-4 bg-green-500/10 text-green-700 rounded-lg">
+            <div className="mb-6 p-4 bg-green-500/10 text-green-700 rounded-lg border border-green-500/20">
               {success}
             </div>
           )}
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Profile Settings */}
+          <div className="space-y-6">
+            {/* Profile Information */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -174,7 +173,7 @@ export default function SettingsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleUpdateProfile} className="space-y-4">
+                <form onSubmit={handleProfileUpdate} className="space-y-4">
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium mb-2">
                       Name
@@ -195,25 +194,31 @@ export default function SettingsPage() {
                       id="email"
                       type="email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
+                      disabled
+                      className="bg-muted cursor-not-allowed"
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Email cannot be changed
+                    </p>
                   </div>
-                  <Button type="submit" disabled={saving} className="w-full">
-                    {saving ? (
+                  <Button type="submit" disabled={loading}>
+                    {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Saving...
                       </>
                     ) : (
-                      'Update Profile'
+                      <>
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Changes
+                      </>
                     )}
                   </Button>
                 </form>
               </CardContent>
             </Card>
 
-            {/* Password Settings */}
+            {/* Password Change */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -221,11 +226,11 @@ export default function SettingsPage() {
                   Change Password
                 </CardTitle>
                 <CardDescription>
-                  Update your account password
+                  Update your password to keep your account secure
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleUpdatePassword} className="space-y-4">
+                <form onSubmit={handlePasswordUpdate} className="space-y-4">
                   <div>
                     <label htmlFor="currentPassword" className="block text-sm font-medium mb-2">
                       Current Password
@@ -235,6 +240,7 @@ export default function SettingsPage() {
                       type="password"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="Enter your current password"
                       required
                     />
                   </div>
@@ -247,9 +253,13 @@ export default function SettingsPage() {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter your new password"
                       required
                       minLength={6}
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Password must be at least 6 characters long
+                    </p>
                   </div>
                   <div>
                     <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2">
@@ -260,18 +270,22 @@ export default function SettingsPage() {
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="Confirm your new password"
                       required
                       minLength={6}
                     />
                   </div>
-                  <Button type="submit" disabled={saving} className="w-full">
-                    {saving ? (
+                  <Button type="submit" disabled={loading}>
+                    {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Updating...
                       </>
                     ) : (
-                      'Update Password'
+                      <>
+                        <Lock className="w-4 h-4 mr-2" />
+                        Update Password
+                      </>
                     )}
                   </Button>
                 </form>
