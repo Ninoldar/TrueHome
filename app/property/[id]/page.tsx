@@ -14,7 +14,8 @@ import {
   Wrench,
   Building2,
   TrendingUp,
-  Shield
+  Shield,
+  Award
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -58,6 +59,10 @@ interface Property {
     description: string | null
     workDate: string
     verificationStatus: string
+    warrantyPeriodMonths: number | null
+    warrantyExpirationDate: string | null
+    warrantyType: string | null
+    warrantyDetails: string | null
   }>
   permits: Array<{
     id: string
@@ -340,6 +345,76 @@ export default function PropertyPage() {
                 </Card>
               ) : null}
 
+              {/* Remaining Warranties */}
+              {property.workEvents && property.workEvents.some(w => {
+                if (!w.warrantyExpirationDate) return false
+                const expiration = new Date(w.warrantyExpirationDate)
+                return expiration > new Date()
+              }) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Award className="w-5 h-5" />
+                      Remaining Warranties
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {property.workEvents
+                        .filter(w => {
+                          if (!w.warrantyExpirationDate) return false
+                          const expiration = new Date(w.warrantyExpirationDate)
+                          return expiration > new Date()
+                        })
+                        .map((work) => {
+                          const expiration = work.warrantyExpirationDate ? new Date(work.warrantyExpirationDate) : null
+                          const daysRemaining = expiration ? Math.ceil((expiration.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null
+                          const yearsRemaining = daysRemaining ? (daysRemaining / 365).toFixed(1) : null
+                          
+                          return (
+                            <div key={work.id} className="border rounded-lg p-4 bg-green-50 border-green-200">
+                              <div className="flex items-start justify-between mb-3">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <Award className="w-4 h-4 text-green-600" />
+                                    <span className="font-medium">{work.workType}</span>
+                                    <span className="px-2 py-1 bg-green-500 text-white text-xs rounded-full">Active</span>
+                                  </div>
+                                  <div className="text-sm text-muted-foreground mb-1">
+                                    Installed: {formatDate(work.workDate)}
+                                  </div>
+                                  {work.warrantyType && (
+                                    <div className="text-sm font-medium mb-1">
+                                      {work.warrantyType} Warranty
+                                    </div>
+                                  )}
+                                  {work.warrantyDetails && (
+                                    <div className="text-xs text-muted-foreground">{work.warrantyDetails}</div>
+                                  )}
+                                </div>
+                              </div>
+                              {expiration && (
+                                <div className="pt-3 border-t border-green-200">
+                                  <div className="flex items-center justify-between text-sm">
+                                    <span className="text-muted-foreground">Expires:</span>
+                                    <span className="font-semibold text-green-700">{formatDate(expiration.toISOString())}</span>
+                                  </div>
+                                  {yearsRemaining && (
+                                    <div className="flex items-center justify-between text-sm mt-1">
+                                      <span className="text-muted-foreground">Time Remaining:</span>
+                                      <span className="font-semibold text-green-700">~{yearsRemaining} years</span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          )
+                        })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Work History */}
               {property.workEvents && property.workEvents.length > 0 && (
                 <Card>
@@ -351,30 +426,45 @@ export default function PropertyPage() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {property.workEvents.map((work) => (
-                        <div key={work.id} className="border rounded-lg p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="font-medium">{work.workType}</div>
-                              <div className="text-sm text-muted-foreground mb-2">
-                                {formatDate(work.workDate)}
+                      {property.workEvents.map((work) => {
+                        const hasActiveWarranty = work.warrantyExpirationDate && new Date(work.warrantyExpirationDate) > new Date()
+                        
+                        return (
+                          <div key={work.id} className="border rounded-lg p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="font-medium">{work.workType}</div>
+                                <div className="text-sm text-muted-foreground mb-2">
+                                  {formatDate(work.workDate)}
+                                </div>
+                                {work.description && (
+                                  <div className="text-sm mb-2">{work.description}</div>
+                                )}
+                                {hasActiveWarranty && work.warrantyType && (
+                                  <div className="flex items-center gap-1 text-xs text-green-700 font-medium mt-2">
+                                    <Award className="w-3 h-3" />
+                                    <span>
+                                      Warranty: {work.warrantyType}
+                                      {work.warrantyExpirationDate && (
+                                        ` (Expires ${formatDate(work.warrantyExpirationDate)})`
+                                      )}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                              {work.description && (
-                                <div className="text-sm">{work.description}</div>
-                              )}
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                work.verificationStatus === 'verified' 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : work.verificationStatus === 'rejected'
+                                  ? 'bg-red-100 text-red-800'
+                                  : 'bg-yellow-100 text-yellow-800'
+                              }`}>
+                                {work.verificationStatus}
+                              </span>
                             </div>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              work.verificationStatus === 'verified' 
-                                ? 'bg-green-100 text-green-800' 
-                                : work.verificationStatus === 'rejected'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-yellow-100 text-yellow-800'
-                            }`}>
-                              {work.verificationStatus}
-                            </span>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </CardContent>
                 </Card>

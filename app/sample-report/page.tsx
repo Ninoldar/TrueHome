@@ -21,7 +21,8 @@ import {
   TreePine,
   Droplets,
   Zap,
-  Flame
+  Flame,
+  Award
 } from "lucide-react"
 
 export default function SampleReportPage() {
@@ -206,9 +207,9 @@ export default function SampleReportPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-4 pt-4 border-t border-orange-200">
-                      <div className="flex items-center gap-1 text-xs text-gray-600">
-                        <Shield className="w-3 h-3" />
-                        <span>30-year warranty</span>
+                      <div className="flex items-center gap-1 text-xs text-green-700 font-medium">
+                        <Award className="w-3 h-3" />
+                        <span>Warranty: 30-year Full Coverage (Expires March 2052)</span>
                       </div>
                       <div className="flex items-center gap-1 text-xs text-gray-600">
                         <CheckCircle2 className="w-3 h-3 text-green-600" />
@@ -229,6 +230,12 @@ export default function SampleReportPage() {
                         </div>
                         <div className="text-sm text-gray-600 mb-2">August 2021</div>
                         <div className="text-sm text-gray-700">New central air conditioning system installed. Energy-efficient model with smart thermostat.</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 pt-4 border-t border-blue-200">
+                      <div className="flex items-center gap-1 text-xs text-green-700 font-medium">
+                        <Award className="w-3 h-3" />
+                        <span>Warranty: 10-year Parts & Labor (Expires August 2031)</span>
                       </div>
                     </div>
                   </div>
@@ -270,6 +277,67 @@ export default function SampleReportPage() {
                     <div className="text-sm text-gray-500 mb-2">Maintenance History</div>
                     <div className="text-lg font-semibold text-green-600">Well Maintained</div>
                     <div className="text-xs text-gray-500 mt-1">Regular maintenance and updates over the past 6 years</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Remaining Warranties */}
+              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <Award className="w-5 h-5 text-green-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900">Remaining Warranties</h3>
+                </div>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-5 border-2 border-green-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Award className="w-5 h-5 text-green-600" />
+                          <span className="font-bold text-gray-900">Roof Replacement</span>
+                          <span className="px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">Active</span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-1">Installed: March 2022</div>
+                        <div className="text-sm font-medium text-gray-900 mb-2">30-Year Full Coverage Warranty</div>
+                        <div className="text-xs text-gray-600">Covers materials, labor, and workmanship. Transferable to new owners.</div>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-green-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-600">Expires:</span>
+                        <span className="text-sm font-semibold text-green-700">March 15, 2052</span>
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs text-gray-600">Time Remaining:</span>
+                        <span className="text-sm font-semibold text-green-700">~28 years</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 rounded-xl p-5 border border-blue-200">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Award className="w-5 h-5 text-blue-600" />
+                          <span className="font-bold text-gray-900">HVAC System</span>
+                          <span className="px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">Active</span>
+                        </div>
+                        <div className="text-sm text-gray-600 mb-1">Installed: August 2021</div>
+                        <div className="text-sm font-medium text-gray-900 mb-2">10-Year Parts & Labor Warranty</div>
+                        <div className="text-xs text-gray-600">Covers compressor, parts, and labor for repairs.</div>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-blue-200">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-600">Expires:</span>
+                        <span className="text-sm font-semibold text-blue-700">August 20, 2031</span>
+                      </div>
+                      <div className="flex items-center justify-between mt-1">
+                        <span className="text-xs text-gray-600">Time Remaining:</span>
+                        <span className="text-sm font-semibold text-blue-700">~7 years</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
