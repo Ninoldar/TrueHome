@@ -11,7 +11,7 @@
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "make-admin": "npx tsx scripts/make-admin.ts",
-    "import-csv": "tsx scripts/import-from-csv.ts"
+    "import-csv": "npx tsx scripts/import-from-csv.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
