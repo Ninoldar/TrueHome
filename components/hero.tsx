@@ -12,11 +12,6 @@ export function Hero() {
       <div className="container mx-auto">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20">
-              <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-              <span className="text-sm text-accent font-medium">Trusted by 50,000+ home buyers</span>
-            </div>
-
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight text-balance">
               {"Know the full story before you buy"}
             </h1>
