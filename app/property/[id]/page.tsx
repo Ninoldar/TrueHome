@@ -157,9 +157,9 @@ export default function PropertyPage() {
       <Header />
       <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
-          {/* Property Header */}
+          {/* Property Header with Details */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-xl">
-            <div className="flex items-start justify-between flex-wrap gap-4">
+            <div className="flex items-start justify-between flex-wrap gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <Home className="w-5 h-5" />
@@ -169,111 +169,152 @@ export default function PropertyPage() {
                 {property.addressLine2 && (
                   <p className="text-xl text-blue-100">{property.addressLine2}</p>
                 )}
-                <p className="text-xl text-blue-100">
+                <p className="text-xl text-blue-100 mb-4">
                   {property.city}, {property.state} {property.zipCode}
                 </p>
                 {property.county && (
-                  <p className="text-sm text-blue-200 mt-1">{property.county} County</p>
+                  <p className="text-sm text-blue-200 mb-4">{property.county} County</p>
                 )}
+                
+                {/* Property Details in Header */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  {property.yearBuilt && (
+                    <div>
+                      <div className="text-xs text-blue-200 mb-1">Year Built</div>
+                      <div className="text-lg font-semibold">{property.yearBuilt}</div>
+                    </div>
+                  )}
+                  {property.livingArea && (
+                    <div>
+                      <div className="text-xs text-blue-200 mb-1">Square Feet</div>
+                      <div className="text-lg font-semibold">{property.livingArea.toLocaleString()}</div>
+                    </div>
+                  )}
+                  {(property.bedrooms || property.bathrooms) && (
+                    <div>
+                      <div className="text-xs text-blue-200 mb-1">Bed / Bath</div>
+                      <div className="text-lg font-semibold">
+                        {property.bedrooms || 'N/A'} / {property.bathrooms || 'N/A'}
+                      </div>
+                    </div>
+                  )}
+                  {property.lotSize && (
+                    <div>
+                      <div className="text-xs text-blue-200 mb-1">Lot Size</div>
+                      <div className="text-lg font-semibold">
+                        {(property.lotSize / 43560).toFixed(2)} acres
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {property.yearBuilt && (
-              <div className="bg-white rounded-xl p-6 border-2 border-blue-100 shadow-sm">
-                <div className="flex items-center gap-2 text-blue-600 mb-2">
-                  <Calendar className="w-5 h-5" />
-                  <span className="text-sm font-medium">Year Built</span>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">{property.yearBuilt}</div>
+          {/* Summary Stats */}
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-white rounded-xl p-6 border-2 border-purple-100 shadow-sm text-center">
+              <div className="flex items-center justify-center gap-2 text-purple-600 mb-2">
+                <Users className="w-5 h-5" />
+                <span className="text-sm font-medium">Owners</span>
               </div>
-            )}
-            {property.livingArea && (
-              <div className="bg-white rounded-xl p-6 border-2 border-green-100 shadow-sm">
-                <div className="flex items-center gap-2 text-green-600 mb-2">
-                  <Home className="w-5 h-5" />
-                  <span className="text-sm font-medium">Square Feet</span>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {property.livingArea.toLocaleString()}
-                </div>
+              <div className="text-3xl font-bold text-gray-900">
+                {property.ownershipEvents?.length || 0}
               </div>
-            )}
-            {(property.bedrooms || property.bathrooms) && (
-              <div className="bg-white rounded-xl p-6 border-2 border-purple-100 shadow-sm">
-                <div className="flex items-center gap-2 text-purple-600 mb-2">
-                  <Users className="w-5 h-5" />
-                  <span className="text-sm font-medium">Bed / Bath</span>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {property.bedrooms || 'N/A'} / {property.bathrooms || 'N/A'}
-                </div>
+              <div className="text-xs text-gray-500 mt-1">Total ownership records</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 border-2 border-orange-100 shadow-sm text-center">
+              <div className="flex items-center justify-center gap-2 text-orange-600 mb-2">
+                <Wrench className="w-5 h-5" />
+                <span className="text-sm font-medium">Work History</span>
               </div>
-            )}
-            {property.lotSize && (
-              <div className="bg-white rounded-xl p-6 border-2 border-orange-100 shadow-sm">
-                <div className="flex items-center gap-2 text-orange-600 mb-2">
-                  <MapPin className="w-5 h-5" />
-                  <span className="text-sm font-medium">Lot Size</span>
-                </div>
-                <div className="text-2xl font-bold text-gray-900">
-                  {property.lotSize.toLocaleString()} sq ft
-                </div>
+              <div className="text-3xl font-bold text-gray-900">
+                {property.workEvents?.length || 0}
               </div>
-            )}
+              <div className="text-xs text-gray-500 mt-1">Maintenance records</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 border-2 border-indigo-100 shadow-sm text-center">
+              <div className="flex items-center justify-center gap-2 text-indigo-600 mb-2">
+                <FileText className="w-5 h-5" />
+                <span className="text-sm font-medium">Permits</span>
+              </div>
+              <div className="text-3xl font-bold text-gray-900">
+                {property.permits?.length || 0}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">Building permits</div>
+            </div>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Property Details */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Home className="w-5 h-5" />
-                    Property Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {property.propertyType && (
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">Property Type</div>
-                        <div className="font-semibold">{property.propertyType}</div>
-                      </div>
-                    )}
-                    {property.apn && (
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">APN / Parcel ID</div>
-                        <div className="font-semibold font-mono text-sm">{property.apn}</div>
-                      </div>
-                    )}
-                    {property.county && (
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">County</div>
-                        <div className="font-semibold">{property.county}</div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Sales History */}
-              {property.sales && property.sales.length > 0 && (
+              {/* Ownership & Sales History (Consolidated) */}
+              {(property.ownershipEvents && property.ownershipEvents.length > 0) || (property.sales && property.sales.length > 0) ? (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
-                      Sales History
+                      <Users className="w-5 h-5" />
+                      Ownership & Sales History
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {property.sales.map((sale) => (
-                        <div key={sale.id} className="border rounded-lg p-4">
-                          <div className="flex justify-between items-start">
+                      {/* Combine ownership events with sales data */}
+                      {property.ownershipEvents.map((event, index) => {
+                        // Find corresponding sale if available
+                        const relatedSale = property.sales?.find(sale => {
+                          const saleDate = new Date(sale.saleDate)
+                          const eventFromDate = new Date(event.fromDate)
+                          // Check if sale date is close to ownership start date
+                          return Math.abs(saleDate.getTime() - eventFromDate.getTime()) < 90 * 24 * 60 * 60 * 1000 // 90 days
+                        })
+
+                        return (
+                          <div key={event.id} className="border-l-4 border-purple-400 pl-4 py-2">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="font-medium">{event.ownerName}</span>
+                                  {event.isCurrent && (
+                                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+                                      Current
+                                    </span>
+                                  )}
+                                </div>
+                                {event.ownerType && (
+                                  <div className="text-sm text-muted-foreground">{event.ownerType}</div>
+                                )}
+                                <div className="text-sm text-muted-foreground mt-1">
+                                  {formatDate(event.fromDate)}
+                                  {event.toDate && ` - ${formatDate(event.toDate)}`}
+                                  {!event.toDate && event.isCurrent && ' - Present'}
+                                </div>
+                              </div>
+                              {relatedSale && (
+                                <div className="text-right ml-4">
+                                  <div className="text-xl font-bold text-primary">
+                                    {formatCurrency(relatedSale.salePrice)}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {formatDate(relatedSale.saleDate)}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )
+                      })}
+                      
+                      {/* Show any sales that don't have matching ownership events */}
+                      {property.sales?.filter(sale => {
+                        return !property.ownershipEvents?.some(event => {
+                          const saleDate = new Date(sale.saleDate)
+                          const eventFromDate = new Date(event.fromDate)
+                          return Math.abs(saleDate.getTime() - eventFromDate.getTime()) < 90 * 24 * 60 * 60 * 1000
+                        })
+                      }).map((sale) => (
+                        <div key={sale.id} className="border-l-4 border-blue-400 pl-4 py-2">
+                          <div className="flex items-start justify-between">
                             <div>
                               <div className="font-medium">{formatDate(sale.saleDate)}</div>
                               {sale.buyerName && (
@@ -283,7 +324,7 @@ export default function PropertyPage() {
                                 <div className="text-sm text-muted-foreground">Seller: {sale.sellerName}</div>
                               )}
                             </div>
-                            <div className="text-right">
+                            <div className="text-right ml-4">
                               <div className="text-xl font-bold text-primary">
                                 {formatCurrency(sale.salePrice)}
                               </div>
@@ -297,45 +338,7 @@ export default function PropertyPage() {
                     </div>
                   </CardContent>
                 </Card>
-              )}
-
-              {/* Ownership History */}
-              {property.ownershipEvents && property.ownershipEvents.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="w-5 h-5" />
-                      Ownership History
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {property.ownershipEvents.map((event) => (
-                        <div key={event.id} className="border rounded-lg p-4">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <div className="font-medium">{event.ownerName}</div>
-                              {event.ownerType && (
-                                <div className="text-sm text-muted-foreground">{event.ownerType}</div>
-                              )}
-                              <div className="text-sm text-muted-foreground mt-1">
-                                {formatDate(event.fromDate)}
-                                {event.toDate && ` - ${formatDate(event.toDate)}`}
-                                {!event.toDate && event.isCurrent && ' - Present'}
-                              </div>
-                            </div>
-                            {event.isCurrent && (
-                              <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                                Current
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              ) : null}
 
               {/* Work History */}
               {property.workEvents && property.workEvents.length > 0 && (

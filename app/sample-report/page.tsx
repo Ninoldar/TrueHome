@@ -44,16 +44,36 @@ export default function SampleReportPage() {
             </p>
           </div>
 
-          {/* Property Header Card */}
+          {/* Property Header Card with Details */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8 shadow-xl">
-            <div className="flex items-start justify-between flex-wrap gap-4">
+            <div className="flex items-start justify-between flex-wrap gap-6">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <Home className="w-5 h-5" />
                   <span className="text-blue-100 text-sm">Property Address</span>
                 </div>
                 <h2 className="text-3xl font-bold mb-2">123 Main Street</h2>
-                <p className="text-xl text-blue-100">Plano, TX 75023</p>
+                <p className="text-xl text-blue-100 mb-4">Plano, TX 75023</p>
+                
+                {/* Property Details in Header */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div>
+                    <div className="text-xs text-blue-200 mb-1">Year Built</div>
+                    <div className="text-lg font-semibold">1995</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-blue-200 mb-1">Square Feet</div>
+                    <div className="text-lg font-semibold">2,400</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-blue-200 mb-1">Bed / Bath</div>
+                    <div className="text-lg font-semibold">4 / 2.5</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-blue-200 mb-1">Lot Size</div>
+                    <div className="text-lg font-semibold">0.25 acres</div>
+                  </div>
+                </div>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 min-w-[200px]">
                 <div className="text-sm text-blue-100 mb-1">Risk Score</div>
@@ -63,92 +83,45 @@ export default function SampleReportPage() {
             </div>
           </div>
 
-          {/* Quick Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-xl p-6 border-2 border-blue-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-2 text-blue-600 mb-2">
-                <Calendar className="w-5 h-5" />
-                <span className="text-sm font-medium">Year Built</span>
-              </div>
-              <div className="text-2xl font-bold text-gray-900">1995</div>
-              <div className="text-xs text-gray-500 mt-1">29 years old</div>
-            </div>
-            <div className="bg-white rounded-xl p-6 border-2 border-green-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-2 text-green-600 mb-2">
-                <Home className="w-5 h-5" />
-                <span className="text-sm font-medium">Square Feet</span>
-              </div>
-              <div className="text-2xl font-bold text-gray-900">2,400</div>
-              <div className="text-xs text-gray-500 mt-1">Living area</div>
-            </div>
-            <div className="bg-white rounded-xl p-6 border-2 border-purple-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-2 text-purple-600 mb-2">
+          {/* Summary Stats */}
+          <div className="grid grid-cols-3 gap-4 mb-8">
+            <div className="bg-white rounded-xl p-6 border-2 border-purple-100 shadow-sm text-center">
+              <div className="flex items-center justify-center gap-2 text-purple-600 mb-2">
                 <Users className="w-5 h-5" />
-                <span className="text-sm font-medium">Bedrooms</span>
+                <span className="text-sm font-medium">Owners</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">4 / 2.5</div>
-              <div className="text-xs text-gray-500 mt-1">Bed / Bath</div>
+              <div className="text-3xl font-bold text-gray-900">3</div>
+              <div className="text-xs text-gray-500 mt-1">Total ownership records</div>
             </div>
-            <div className="bg-white rounded-xl p-6 border-2 border-orange-100 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-2 text-orange-600 mb-2">
-                <TreePine className="w-5 h-5" />
-                <span className="text-sm font-medium">Lot Size</span>
+            <div className="bg-white rounded-xl p-6 border-2 border-orange-100 shadow-sm text-center">
+              <div className="flex items-center justify-center gap-2 text-orange-600 mb-2">
+                <Wrench className="w-5 h-5" />
+                <span className="text-sm font-medium">Work History</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900">0.25</div>
-              <div className="text-xs text-gray-500 mt-1">Acres</div>
+              <div className="text-3xl font-bold text-gray-900">4</div>
+              <div className="text-xs text-gray-500 mt-1">Maintenance records</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 border-2 border-indigo-100 shadow-sm text-center">
+              <div className="flex items-center justify-center gap-2 text-indigo-600 mb-2">
+                <FileText className="w-5 h-5" />
+                <span className="text-sm font-medium">Permits</span>
+              </div>
+              <div className="text-3xl font-bold text-gray-900">2</div>
+              <div className="text-xs text-gray-500 mt-1">Building permits</div>
             </div>
           </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Property Details */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <Home className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">Property Details</h3>
-                </div>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-sm text-gray-500 mb-1">Property Type</div>
-                      <div className="font-semibold text-gray-900">Single Family Residence</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-gray-500 mb-1">County</div>
-                      <div className="font-semibold text-gray-900">Collin County</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-gray-500 mb-1">School District</div>
-                      <div className="font-semibold text-gray-900">Plano ISD</div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="text-sm text-gray-500 mb-1">APN / Parcel ID</div>
-                      <div className="font-semibold text-gray-900 font-mono text-sm">R-12345-678-90</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-gray-500 mb-1">Property Tax ID</div>
-                      <div className="font-semibold text-gray-900">TX-2024-001234</div>
-                    </div>
-                    <div>
-                      <div className="text-sm text-gray-500 mb-1">Zoning</div>
-                      <div className="font-semibold text-gray-900">Residential (R-1)</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* Ownership Timeline */}
+              {/* Ownership & Sales History (Consolidated) */}
               <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-purple-600" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">Ownership History</h3>
+                  <h3 className="text-2xl font-bold text-gray-900">Ownership & Sales History</h3>
                 </div>
                 <div className="space-y-4">
                   <div className="relative pl-8 border-l-4 border-green-500">
@@ -161,14 +134,12 @@ export default function SampleReportPage() {
                             <span className="px-2 py-1 bg-green-500 text-white text-xs font-medium rounded-full">Active</span>
                           </div>
                           <div className="text-sm text-gray-600">March 2020 - Present</div>
+                          <div className="text-sm text-gray-600 mt-1">Ownership Duration: 4+ years</div>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-green-600">$425,000</div>
-                          <div className="text-xs text-gray-500">Purchase Price</div>
+                          <div className="text-xs text-gray-500">Purchase Price (Mar 2020)</div>
                         </div>
-                      </div>
-                      <div className="mt-3 pt-3 border-t border-green-200">
-                        <div className="text-sm text-gray-600">Ownership Duration: 4+ years</div>
                       </div>
                     </div>
                   </div>
@@ -180,15 +151,13 @@ export default function SampleReportPage() {
                         <div>
                           <div className="font-bold text-gray-900 mb-1">Previous Owner</div>
                           <div className="text-sm text-gray-600">June 2015 - March 2020</div>
+                          <div className="text-sm text-gray-600 mt-1">Ownership Duration: ~5 years</div>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-blue-600">$350,000</div>
-                          <div className="text-xs text-gray-500">Sale Price</div>
+                          <div className="text-xs text-gray-500">Sale Price (Jun 2015)</div>
+                          <div className="text-xs text-green-600 font-medium mt-1">+21% value increase</div>
                         </div>
-                      </div>
-                      <div className="mt-3 pt-3 border-t border-blue-200">
-                        <div className="text-sm text-gray-600">Ownership Duration: ~5 years</div>
-                        <div className="text-sm text-green-600 font-medium mt-1">+21% value increase</div>
                       </div>
                     </div>
                   </div>
@@ -200,77 +169,14 @@ export default function SampleReportPage() {
                         <div>
                           <div className="font-bold text-gray-900 mb-1">Original Owner</div>
                           <div className="text-sm text-gray-600">1995 - June 2015</div>
+                          <div className="text-sm text-gray-600 mt-1">Ownership Duration: 20 years</div>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-gray-600">$185,000</div>
-                          <div className="text-xs text-gray-500">Original Purchase</div>
+                          <div className="text-xs text-gray-500">Original Purchase (1995)</div>
+                          <div className="text-xs text-green-600 font-medium mt-1">+130% value increase</div>
                         </div>
                       </div>
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <div className="text-sm text-gray-600">Ownership Duration: 20 years</div>
-                        <div className="text-sm text-green-600 font-medium mt-1">+130% value increase over ownership</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sales History */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900">Sales History</h3>
-                </div>
-                <div className="space-y-4">
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Calendar className="w-4 h-4 text-green-600" />
-                          <span className="font-bold text-gray-900">March 15, 2020</span>
-                        </div>
-                        <div className="text-sm text-gray-600">Most Recent Sale</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold text-green-600">$425,000</div>
-                        <div className="text-xs text-gray-500">Sale Price</div>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4 pt-4 border-t border-green-200">
-                      <div>
-                        <div className="text-xs text-gray-500">Price per sq ft</div>
-                        <div className="font-semibold text-gray-900">$177</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500">Days on Market</div>
-                        <div className="font-semibold text-gray-900">12 days</div>
-                      </div>
-                      <div>
-                        <div className="text-xs text-gray-500">Sale Type</div>
-                        <div className="font-semibold text-gray-900">Traditional</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Calendar className="w-4 h-4 text-blue-600" />
-                          <span className="font-bold text-gray-900">June 22, 2015</span>
-                        </div>
-                        <div className="text-sm text-gray-600">Previous Sale</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold text-blue-600">$350,000</div>
-                        <div className="text-xs text-gray-500">Sale Price</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 mt-3 pt-3 border-t border-blue-200">
-                      <TrendingUp className="w-4 h-4 text-green-600" />
-                      <span className="text-sm font-medium text-green-600">+21.4% appreciation in 5 years</span>
                     </div>
                   </div>
                 </div>
