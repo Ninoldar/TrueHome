@@ -1,7 +1,12 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Shield, Search, FileCheck } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export function Hero() {
+  const router = useRouter()
+  
   return (
     <section className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto">
@@ -23,11 +28,20 @@ export function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="text-base">
+              <Button 
+                size="lg" 
+                className="text-base"
+                onClick={() => router.push('/pricing')}
+              >
                 {"Get Your Report"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <Button size="lg" variant="outline" className="text-base bg-transparent">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-base bg-transparent"
+                onClick={() => router.push('/sample-report')}
+              >
                 {"See Sample Report"}
               </Button>
             </div>
