@@ -43,11 +43,17 @@ export default function AdminPage() {
     }
 
     if (status === 'authenticated') {
-      // Check if user is admin
-      if (session?.user?.role !== 'admin') {
+      // Check if user is admin (case-insensitive)
+      const userRole = session?.user?.role?.toLowerCase()
+      console.log('[AdminPage] User role:', userRole, 'Full session:', session)
+      
+      if (userRole !== 'admin') {
+        console.log('[AdminPage] User is not admin, redirecting to dashboard')
         router.push('/dashboard')
         return
       }
+      
+      console.log('[AdminPage] User is admin, fetching stats')
       fetchStats()
     }
   }, [status, session, router])
@@ -56,16 +62,22 @@ export default function AdminPage() {
     try {
       setLoading(true)
       setError(null)
+      console.log('[AdminPage] Fetching admin stats...')
       const response = await fetch('/api/admin/stats')
       
+      console.log('[AdminPage] Response status:', response.status)
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch admin stats')
+        const errorData = await response.json().catch(() => ({}))
+        console.error('[AdminPage] Error response:', errorData)
+        throw new Error(errorData.error || 'Failed to fetch admin stats')
       }
 
       const data = await response.json()
+      console.log('[AdminPage] Stats received:', data)
       setStats(data)
     } catch (err) {
-      console.error('Error fetching admin stats:', err)
+      console.error('[AdminPage] Error fetching admin stats:', err)
       setError(err instanceof Error ? err.message : 'Failed to load admin stats')
     } finally {
       setLoading(false)
@@ -86,14 +98,18 @@ export default function AdminPage() {
     )
   }
 
-  if (error) {
+  if (error && !stats) {
     return (
       <main className="min-h-screen">
         <Header />
         <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
           <div className="container mx-auto max-w-6xl">
             <div className="text-center py-12">
+              <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
               <p className="text-destructive mb-4">{error}</p>
+              <p className="text-sm text-muted-foreground mb-4">
+                Make sure you are signed in with an admin account. Check the browser console for details.
+              </p>
               <Button onClick={fetchStats}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Retry
@@ -112,12 +128,23 @@ export default function AdminPage() {
       <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+            <div>
+              <h1 className="text-4xl font-bold">Admin Dashboard</h1>
+              <p className="text-muted-foreground mt-2">Overview of platform statistics and activity</p>
+            </div>
             <Button onClick={fetchStats} variant="outline">
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </Button>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                ⚠️ {error} - Some data may not be available.
+              </p>
+            </div>
+          )}
 
           {/* Overview Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -162,15 +189,63 @@ export default function AdminPage() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Growth</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium">Reports Purchased</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
+                  {stats?.totalReports ?? 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {stats?.todayReports ?? 0} purchased today
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Additional Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">New Signups Today</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
                   {stats?.todaySignups ?? 0}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  New signups today
+                  New users registered
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Reports Generated Today</CardTitle>
+                <FileText className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">
+                  {stats?.todayReports ?? 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Reports created today
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Revenue Today</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  ${(stats?.todayRevenue ?? 0).toLocaleString()}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Revenue generated today
                 </p>
               </CardContent>
             </Card>

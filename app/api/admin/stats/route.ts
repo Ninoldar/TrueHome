@@ -11,14 +11,18 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if user is admin
+    // Check if user is admin (case-insensitive)
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: { role: true }
     })
 
-    if (user?.role !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    console.log('[AdminStats] User role from DB:', user?.role)
+    console.log('[AdminStats] Session user role:', session.user.role)
+
+    if (!user || user.role?.toLowerCase() !== 'admin') {
+      console.log('[AdminStats] User is not admin, returning 403')
+      return NextResponse.json({ error: 'Forbidden - Admin access required' }, { status: 403 })
     }
 
     // Get today's date range
