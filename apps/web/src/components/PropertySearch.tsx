@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { Loader2, Search } from 'lucide-react'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || '/api'
 
@@ -9,7 +10,8 @@ export default function PropertySearch() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<any[]>([])
   const [suggestions, setSuggestions] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
+  const [isFetchingSuggestions, setIsFetchingSuggestions] = useState(false)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1)
   const router = useRouter()
@@ -18,42 +20,65 @@ export default function PropertySearch() {
 
   // Autocomplete as user types
   useEffect(() => {
-    const fetchSuggestions = async () => {
-      if (query.length < 2) {
-        setSuggestions([])
-        setShowSuggestions(false)
-        return
-      }
+    const trimmedQuery = query.trim()
+    if (trimmedQuery.length < 2) {
+      setSuggestions([])
+      setShowSuggestions(false)
+      setIsFetchingSuggestions(false)
+      return
+    }
 
+    const controller = new AbortController()
+    const fetchSuggestions = async () => {
+      setIsFetchingSuggestions(true)
       try {
-        const response = await fetch(`${API_URL}/search/autocomplete?q=${encodeURIComponent(query)}`)
+        const response = await fetch(
+          `${API_URL}/search/autocomplete?q=${encodeURIComponent(trimmedQuery)}`,
+          { signal: controller.signal }
+        )
         if (!response.ok) {
           console.error('Autocomplete response not OK:', response.status)
           setSuggestions([])
+          setShowSuggestions(false)
           return
         }
         const data = await response.json()
-        setSuggestions(data.suggestions || [])
-        setShowSuggestions(data.suggestions && data.suggestions.length > 0)
+        const suggestionList = data.suggestions || []
+        setSuggestions(suggestionList)
+        setShowSuggestions(suggestionList.length > 0)
       } catch (error) {
-        console.error('Autocomplete error:', error)
-        setSuggestions([])
-        setShowSuggestions(false)
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Autocomplete error:', error)
+          setSuggestions([])
+          setShowSuggestions(false)
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsFetchingSuggestions(false)
+        }
       }
     }
 
-    const debounceTimer = setTimeout(fetchSuggestions, 300)
-    return () => clearTimeout(debounceTimer)
+    const debounceTimer = setTimeout(fetchSuggestions, 250)
+    return () => {
+      clearTimeout(debounceTimer)
+      controller.abort()
+    }
   }, [query])
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!query.trim()) return
+    const trimmedQuery = query.trim()
+    if (!trimmedQuery) {
+      setResults([])
+      return
+    }
 
     setShowSuggestions(false)
-    setLoading(true)
+    setIsSearching(true)
+    setResults([])
     try {
-      const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(query)}`)
+      const response = await fetch(`${API_URL}/search?q=${encodeURIComponent(trimmedQuery)}`)
       if (!response.ok) {
         console.error('Search response not OK:', response.status)
         setResults([])
@@ -65,7 +90,7 @@ export default function PropertySearch() {
       console.error('Search error:', error)
       setResults([])
     } finally {
-      setLoading(false)
+      setIsSearching(false)
     }
   }
 
@@ -128,12 +153,23 @@ export default function PropertySearch() {
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value)
+                setSelectedSuggestionIndex(-1)
+              }}
               onKeyDown={handleKeyDown}
               onFocus={() => query.length >= 2 && suggestions.length > 0 && setShowSuggestions(true)}
               placeholder="Enter address, city, ZIP code, or APN..."
-              className="w-full px-5 py-4 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder:text-gray-400 shadow-sm transition-all"
+              className="w-full px-5 py-4 pr-12 text-lg border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder:text-gray-400 shadow-sm transition-all"
+              aria-autocomplete="list"
+              aria-expanded={showSuggestions}
+              aria-busy={isFetchingSuggestions}
             />
+            {isFetchingSuggestions && (
+              <span className="absolute inset-y-0 right-5 flex items-center text-gray-400">
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+              </span>
+            )}
             
             {/* Autocomplete Suggestions Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
@@ -161,15 +197,25 @@ export default function PropertySearch() {
           </div>
           <button
             type="submit"
-            disabled={loading}
-            className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            disabled={isSearching}
+            className="px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2"
           >
-            {loading ? 'Searching...' : 'Search'}
+            {isSearching ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                Searching...
+              </>
+            ) : (
+              <>
+                <Search className="h-4 w-4" aria-hidden="true" />
+                Search
+              </>
+            )}
           </button>
         </div>
       </form>
 
-      {!loading && query && results.length === 0 && (
+      {!isSearching && query && results.length === 0 && (
         <div className="mt-4 text-center py-8">
           <p className="text-gray-500">No properties found. Try a different search term.</p>
           <p className="text-sm text-gray-400 mt-2">
