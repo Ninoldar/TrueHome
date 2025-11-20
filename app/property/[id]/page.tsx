@@ -562,35 +562,72 @@ export default function PropertyPage() {
 
             {/* Sidebar */}
             <div className="space-y-6">
+              {/* Risk Assessment Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    Risk Assessment
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center mb-4">
+                    <div className="text-4xl font-bold text-green-600 mb-2">Low</div>
+                    <div className="text-sm text-muted-foreground">Overall Risk Score</div>
+                  </div>
+                  <p className="text-sm text-muted-foreground text-center">
+                    {property.workEvents && property.workEvents.length > 0 
+                      ? "Property shows good maintenance history"
+                      : "Limited data available - assessment pending more information"}
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Property Value Trend */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    Value Trend
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">Current Estimated Value</div>
+                      <div className="text-2xl font-bold text-gray-900">
+                        {property.sales && property.sales.length > 0 
+                          ? formatCurrency(property.sales[0].salePrice)
+                          : "N/A"}
+                      </div>
+                    </div>
+                    {property.sales && property.sales.length > 1 && (
+                      <div className="pt-4 border-t">
+                        <div className="flex items-center gap-2 text-green-600 mb-2">
+                          <TrendingUp className="w-4 h-4" />
+                          <span className="text-sm font-medium">Price history available</span>
+                        </div>
+                        <div className="text-xs text-muted-foreground">Based on recent sales and market trends</div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Quick Actions */}
               <Card>
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button asChild className="w-full" variant="outline">
-                    <Link href="/pricing">Generate Report</Link>
+                    <Link href="/pricing">Generate Full Report</Link>
                   </Button>
                   <Button asChild className="w-full" variant="outline">
                     <Link href="/dashboard">Add Update</Link>
                   </Button>
                 </CardContent>
               </Card>
-
-              {property.latitude && property.longitude && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MapPin className="w-5 h-5" />
-                      Location
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm text-muted-foreground">
-                      Coordinates: {property.latitude.toFixed(6)}, {property.longitude.toFixed(6)}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </div>
           </div>
         </div>

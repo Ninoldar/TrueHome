@@ -30,7 +30,18 @@ export async function GET(
         },
         workEvents: {
           orderBy: { workDate: 'desc' },
-          take: 20
+          take: 20,
+          select: {
+            id: true,
+            workType: true,
+            description: true,
+            workDate: true,
+            verificationStatus: true,
+            warrantyPeriodMonths: true,
+            warrantyExpirationDate: true,
+            warrantyType: true,
+            warrantyDetails: true,
+          }
         },
         permits: {
           orderBy: { issuedDate: 'desc' },
