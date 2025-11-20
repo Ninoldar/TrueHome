@@ -1,15 +1,16 @@
-import { Hero } from "@/components/hero"
-import { CTA } from "@/components/cta"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { Features } from "@/components/features"
 
-export default function Home() {
+export default function FeaturesPage() {
   return (
     <main className="min-h-screen">
       <Header />
-      <Hero />
-      <CTA />
+      <div className="pt-16">
+        <Features />
+      </div>
       <Footer />
     </main>
   )
 }
+
