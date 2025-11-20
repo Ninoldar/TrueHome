@@ -10,7 +10,8 @@
     "start": "next start",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
-    "make-admin": "npx tsx scripts/make-admin.ts"
+    "make-admin": "npx tsx scripts/make-admin.ts",
+    "import-csv": "tsx scripts/import-from-csv.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -71,6 +72,8 @@
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "csv-parse": "^6.1.0",
+    "dotenv": "^17.2.3",
     "postcss": "^8.5",
     "prisma": "^6.19.0",
     "tailwindcss": "^4.1.9",
