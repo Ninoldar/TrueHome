@@ -25,3 +25,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# build artifacts
+apps/web/.next
+apps/web/node_modules
+packages/node_modules
+import-progress.log
