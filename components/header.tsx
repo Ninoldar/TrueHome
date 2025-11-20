@@ -102,7 +102,7 @@ export function Header() {
                 </Button>
                 <Button 
                   size="sm"
-                  onClick={() => router.push('/pricing')}
+                  onClick={() => router.push('/signup')}
                 >
                   Get Started
                 </Button>

@@ -1,9 +1,14 @@
+'use client'
+
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Check } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 export default function PricingPage() {
+  const router = useRouter()
+  
   return (
     <main className="min-h-screen">
       <Header />
@@ -34,7 +39,7 @@ export default function PricingPage() {
                   <span>PDF Download</span>
                 </li>
               </ul>
-              <Button className="w-full" size="lg">
+              <Button className="w-full" size="lg" onClick={() => router.push('/signup')}>
                 Get Started
               </Button>
             </div>
@@ -60,7 +65,7 @@ export default function PricingPage() {
                   <span>PDF Downloads</span>
                 </li>
               </ul>
-              <Button className="w-full" size="lg">
+              <Button className="w-full" size="lg" onClick={() => router.push('/signup')}>
                 Get Started
               </Button>
             </div>
@@ -83,7 +88,7 @@ export default function PricingPage() {
                   <span>PDF Downloads</span>
                 </li>
               </ul>
-              <Button className="w-full" size="lg">
+              <Button className="w-full" size="lg" onClick={() => router.push('/signup')}>
                 Get Started
               </Button>
             </div>
