@@ -91,17 +91,63 @@ export default function PropertyPage() {
     try {
       setLoading(true)
       setError(null)
+      console.log(`[Property Page] Fetching property with ID: ${propertyId}`)
+      
       const response = await fetch(`/api/properties/${propertyId}`)
+      const data = await response.json()
       
       if (!response.ok) {
-        throw new Error('Failed to fetch property')
+        console.error(`[Property Page] API error:`, data)
+        throw new Error(data.error || data.details || 'Failed to fetch property')
       }
 
-      const data = await response.json()
+      if (!data.property) {
+        console.error(`[Property Page] No property in response:`, data)
+        throw new Error('Property data not found in response')
+      }
+
+      console.log(`[Property Page] Successfully loaded property:`, data.property.address)
       setProperty(data.property)
     } catch (err) {
-      console.error('Error fetching property:', err)
-      setError(err instanceof Error ? err.message : 'Failed to load property')
+      console.error('[Property Page] Error fetching property:', err)
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load property'
+      setError(errorMessage)
+      
+      // Try to fetch just the basic property info as fallback
+      try {
+        console.log('[Property Page] Attempting fallback fetch...')
+        const fallbackResponse = await fetch(`/api/search?q=${encodeURIComponent(propertyId)}`)
+        const fallbackData = await fallbackResponse.json()
+        if (fallbackData.results && fallbackData.results.length > 0) {
+          const basicProperty = fallbackData.results[0]
+          // Create a minimal property object
+          setProperty({
+            id: basicProperty.id,
+            address: basicProperty.address,
+            city: basicProperty.city,
+            state: basicProperty.state || 'TX',
+            zipCode: basicProperty.zipCode,
+            addressLine2: null,
+            county: basicProperty.county || null,
+            apn: basicProperty.apn || null,
+            lotSize: basicProperty.lotSize || null,
+            livingArea: basicProperty.livingArea || null,
+            bedrooms: basicProperty.bedrooms || null,
+            bathrooms: basicProperty.bathrooms || null,
+            yearBuilt: basicProperty.yearBuilt || null,
+            propertyType: basicProperty.propertyType || null,
+            latitude: null,
+            longitude: null,
+            sales: [],
+            ownershipEvents: [],
+            workEvents: [],
+            permits: [],
+          })
+          setError(null) // Clear error since we got basic data
+        }
+      } catch (fallbackErr) {
+        console.error('[Property Page] Fallback also failed:', fallbackErr)
+      }
     } finally {
       setLoading(false)
     }

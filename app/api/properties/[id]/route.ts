@@ -10,7 +10,10 @@ export async function GET(
   try {
     const propertyId = params.id
 
+    console.log(`[Property API] Fetching property with ID: ${propertyId}`)
+
     if (!propertyId) {
+      console.log('[Property API] No property ID provided')
       return NextResponse.json(
         { error: 'Property ID is required' },
         { status: 400 }
@@ -51,17 +54,26 @@ export async function GET(
     })
 
     if (!property) {
+      console.log(`[Property API] Property not found for ID: ${propertyId}`)
       return NextResponse.json(
-        { error: 'Property not found' },
+        { error: 'Property not found', propertyId },
         { status: 404 }
       )
     }
 
+    console.log(`[Property API] Successfully fetched property: ${property.address}`)
     return NextResponse.json({ property })
   } catch (error) {
-    console.error('Error fetching property:', error)
+    console.error('[Property API] Error fetching property:', error)
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    const errorStack = error instanceof Error ? error.stack : undefined
+    console.error('[Property API] Error details:', { errorMessage, errorStack })
     return NextResponse.json(
-      { error: 'Failed to fetch property' },
+      { 
+        error: 'Failed to fetch property',
+        details: errorMessage,
+        propertyId: params.id
+      },
       { status: 500 }
     )
   }
