@@ -83,6 +83,9 @@ export function Header() {
                       Admin Dashboard
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem onClick={() => router.push('/settings')}>
+                    Settings
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
                     <LogOut className="w-4 h-4 mr-2" />
