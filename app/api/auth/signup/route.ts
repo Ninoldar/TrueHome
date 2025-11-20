@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,16 +35,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate password length
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters long' },
+        { status: 400 }
+      )
+    }
+
+    // Hash password with bcrypt
+    const passwordHash = await bcrypt.hash(password, 10)
+
     // Create new user
-    // Note: In production, you should hash the password using bcrypt
-    // For now, we're storing it as-is since auth.ts accepts any password
     const user = await prisma.user.create({
       data: {
         email: normalizedEmail,
         name: name?.trim() || null,
+        passwordHash,
         role: 'buyer', // Default role
-        // TODO: Add password hashing with bcrypt
-        // passwordHash: await bcrypt.hash(password, 10)
       }
     })
 

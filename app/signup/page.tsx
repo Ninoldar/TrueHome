@@ -40,16 +40,36 @@ export default function SignUpPage() {
       }
 
       // Automatically sign in after successful signup
+      // Use normalized email (lowercase) to match what was stored in the database
+      const normalizedEmail = email.toLowerCase().trim()
+      
+      // Small delay to ensure database transaction is committed
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       const result = await signIn('credentials', {
-        email,
+        email: normalizedEmail,
         password,
         redirect: false,
+        callbackUrl: '/dashboard',
       })
 
       if (result?.error) {
-        setError('Account created but sign in failed. Please try signing in manually.')
+        console.error('Sign-in error after signup:', result.error)
+        setError('Account created successfully, but automatic sign-in failed. Please sign in manually.')
+        setLoading(false)
+        // Redirect to sign-in page after a short delay
+        setTimeout(() => {
+          router.push('/signin')
+        }, 2000)
+      } else if (result?.ok) {
+        // Successfully signed in - force a hard redirect to ensure session is loaded
+        window.location.href = '/dashboard'
       } else {
-        router.push('/dashboard')
+        // Unknown result - try redirect anyway
+        router.refresh()
+        setTimeout(() => {
+          window.location.href = '/dashboard'
+        }, 500)
       }
     } catch (err) {
       console.error('Signup error:', err)

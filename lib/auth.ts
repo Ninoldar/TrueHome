@@ -1,6 +1,7 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
+import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -15,11 +16,14 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        // Normalize email to lowercase for consistent lookup
+        const normalizedEmail = credentials.email.toLowerCase().trim()
+        
         // Find user by email (case-insensitive)
         const user = await prisma.user.findFirst({
           where: {
             email: {
-              equals: credentials.email.toLowerCase(),
+              equals: normalizedEmail,
               mode: 'insensitive'
             }
           }
@@ -29,7 +33,21 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // For now, accept any password. In production, verify password hash
+        // Verify password
+        // If user has no passwordHash (legacy accounts), allow any password for backward compatibility
+        // New accounts will always have a passwordHash
+        if (user.passwordHash) {
+          const isValidPassword = await bcrypt.compare(
+            credentials.password || '',
+            user.passwordHash
+          )
+          
+          if (!isValidPassword) {
+            return null
+          }
+        }
+        // If no passwordHash exists, allow login for backward compatibility with existing accounts
+
         return {
           id: user.id,
           email: user.email,
