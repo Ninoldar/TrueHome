@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '../../../../lib/prisma'
+import { prisma } from '@/lib/prisma'
 
 async function calculateRiskScore(propertyId: string): Promise<number> {
   const property = await prisma.property.findUnique({
