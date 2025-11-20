@@ -5,10 +5,12 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> | { id: string } }
 ) {
   try {
-    const propertyId = params.id
+    // Handle both sync and async params (Next.js 13+ vs 15+)
+    const resolvedParams = params instanceof Promise ? await params : params
+    const propertyId = resolvedParams.id
 
     console.log(`[Property API] Fetching property with ID: ${propertyId}`)
 
