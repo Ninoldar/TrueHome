@@ -120,10 +120,10 @@ async function importCSV(filePath: string) {
         // Extract city and zip
         const city = row.situsCity?.trim() || 'Unknown'
         const zipCode = row.situsZip?.trim() || ''
-        const state = row.situsState?.trim() || 'TX'
+        const state = 'TX' // Texas data, always TX
 
-        // Extract APN (Assessor's Parcel Number)
-        const apn = row.parcelNumber?.trim() || row.accountNumber?.trim() || null
+        // Extract APN (Assessor's Parcel Number) - geoID is the APN in this CSV
+        const apn = row.geoID?.trim() || row.propID?.trim() || null
 
         // Extract property details
         const yearBuilt = parseInteger(row.imprvYearBuilt)
@@ -141,6 +141,15 @@ async function importCSV(filePath: string) {
         const bathrooms = parseNumber(row.bathrooms)
         const propertyType = parsePropertyType(row.propertyUse, row.propertyType)
 
+        // Validate required fields
+        if (!zipCode || zipCode.length < 5) {
+          skipped++
+          if (processed % 1000 === 0) {
+            console.log(`   Processed ${processed} rows... (${imported} imported, ${skipped} skipped, ${errors} errors)`)
+          }
+          return
+        }
+
         // Prepare property data
         const propertyData: any = {
           address,
@@ -148,21 +157,16 @@ async function importCSV(filePath: string) {
           state,
           zipCode,
           county: 'Collin',
-          apn,
-          yearBuilt,
-          livingArea,
-          lotSize,
-          bedrooms,
-          bathrooms,
-          propertyType,
         }
-
-        // Remove null/undefined values
-        Object.keys(propertyData).forEach(key => {
-          if (propertyData[key] === null || propertyData[key] === undefined) {
-            delete propertyData[key]
-          }
-        })
+        
+        // Add optional fields only if they have values
+        if (apn) propertyData.apn = apn
+        if (yearBuilt) propertyData.yearBuilt = yearBuilt
+        if (livingArea) propertyData.livingArea = livingArea
+        if (lotSize) propertyData.lotSize = lotSize
+        if (bedrooms) propertyData.bedrooms = bedrooms
+        if (bathrooms) propertyData.bathrooms = bathrooms
+        if (propertyType) propertyData.propertyType = propertyType
 
         // Check if property already exists (by APN first, then by address)
         let existing = null
@@ -221,14 +225,14 @@ async function importCSV(filePath: string) {
                 }
               } catch (updateErr) {
                 errors++
-                if (errors % 100 === 0) {
-                  console.error(`Error updating property:`, updateErr)
+                if (errors <= 10 || errors % 1000 === 0) {
+                  console.error(`[Row ${processed}] Error updating property:`, updateErr?.message || updateErr)
                 }
               }
             } else {
               errors++
-              if (errors % 100 === 0) {
-                console.error(`Error creating property:`, err)
+              if (errors <= 10 || errors % 1000 === 0) {
+                console.error(`[Row ${processed}] Error creating property:`, err?.message || err, `Address: ${address}`)
               }
             }
           }
