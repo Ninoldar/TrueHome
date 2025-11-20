@@ -1,7 +1,19 @@
-"use client"
+import { Hero } from "@/components/hero"
+import { Features } from "@/components/features"
+import { Benefits } from "@/components/benefits"
+import { CTA } from "@/components/cta"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
 
-import V0LandingTemplate from "../apps/web/src/components/V0LandingTemplate"
-
-export default function SyntheticV0PageForDeployment() {
-  return <V0LandingTemplate />
+export default function Home() {
+  return (
+    <main className="min-h-screen">
+      <Header />
+      <Hero />
+      <Features />
+      <Benefits />
+      <CTA />
+      <Footer />
+    </main>
+  )
 }

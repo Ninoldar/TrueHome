@@ -1,92 +1,30 @@
-# TrueHome
+# Home history landing page
 
-A Carfax for homes - comprehensive property history and insights platform.
+*Automatically synced with your [v0.app](https://v0.app) deployments*
+
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/jonathan-nguyens-projects-b6a44015/v0-home-history-landing-page)
+[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/pFy4ViimFUI)
 
 ## Overview
 
-TrueHome provides detailed property history reports including:
-- Ownership history
-- Sales records
-- Building permits and inspections
-- Contractor work history
-- Rental property history
-- Insurance claims
-- Risk assessments
-- Comparable properties
+This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
+Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
 
-## Tech Stack
+## Deployment
 
-- **Frontend**: Next.js 14 (App Router), React, Tailwind CSS
-- **Backend**: NestJS, TypeScript
-- **Database**: PostgreSQL with PostGIS
-- **ORM**: Prisma
-- **Search**: OpenSearch/Elasticsearch
-- **Cache**: Redis
-- **Storage**: S3-compatible (MinIO for local dev)
+Your project is live at:
 
-## Getting Started
+**[https://vercel.com/jonathan-nguyens-projects-b6a44015/v0-home-history-landing-page](https://vercel.com/jonathan-nguyens-projects-b6a44015/v0-home-history-landing-page)**
 
-### Prerequisites
+## Build your app
 
-- Node.js 18+
-- Docker and Docker Compose
-- PostgreSQL client tools (optional)
+Continue building your app on:
 
-### Setup
+**[https://v0.app/chat/pFy4ViimFUI](https://v0.app/chat/pFy4ViimFUI)**
 
-1. Install dependencies:
-\`\`\`bash
-npm install
-\`\`\`
+## How It Works
 
-2. Start Docker services (PostgreSQL, Redis, OpenSearch, MinIO):
-\`\`\`bash
-npm run docker:up
-\`\`\`
-
-3. Set up environment variables:
-\`\`\`bash
-cp .env.example .env
-# Edit .env with your configuration
-\`\`\`
-
-4. Generate Prisma client and run migrations:
-\`\`\`bash
-npm run db:generate
-npm run db:migrate
-\`\`\`
-
-5. Start development servers:
-\`\`\`bash
-npm run dev
-\`\`\`
-
-- Frontend: http://localhost:3000
-- API: http://localhost:4000
-- Prisma Studio: `npm run db:studio`
-
-## Project Structure
-
-\`\`\`
-truehome/
-├── apps/
-│   ├── web/          # Next.js frontend
-│   └── api/           # NestJS backend API
-├── packages/
-│   ├── db/            # Prisma schema and migrations
-│   ├── config/        # Shared configuration
-│   └── shared/        # Shared utilities and types
-└── infra/             # Infrastructure as code
-\`\`\`
-
-## Development
-
-- `npm run dev` - Start all services in development mode
-- `npm run build` - Build all packages
-- `npm run lint` - Lint all packages
-- `npm run db:migrate` - Run database migrations
-- `npm run db:studio` - Open Prisma Studio
-
-## License
-
-Private - All rights reserved
+1. Create and modify your project using [v0.app](https://v0.app)
+2. Deploy your chats from the v0 interface
+3. Changes are automatically pushed to this repository
+4. Vercel deploys the latest version from this repository
