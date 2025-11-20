@@ -71,16 +71,14 @@ export default function ForgotPasswordPage() {
             {success ? (
               <div className="space-y-4">
                 <div className="p-4 bg-green-500/10 text-green-700 text-sm rounded">
-                  <p className="font-medium mb-2">Check your email</p>
+                  <p className="font-medium mb-2">Password Reset Requested</p>
                   <p>
-                    If an account exists with that email, a password reset link has been sent.
-                    Please check your inbox and follow the instructions to reset your password.
+                    If an account exists with that email, a password reset has been processed.
+                    Please check the server logs for the reset link, or contact support for assistance.
                   </p>
-                  {process.env.NODE_ENV === 'development' && (
-                    <p className="mt-2 text-xs">
-                      Note: In development mode, check the console for the reset link.
-                    </p>
-                  )}
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Note: Email sending is currently disabled. Reset links are logged on the server.
+                  </p>
                 </div>
                 <Button asChild className="w-full">
                   <Link href="/signin">Back to Sign In</Link>

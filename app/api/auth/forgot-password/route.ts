@@ -55,17 +55,12 @@ export async function POST(request: NextRequest) {
       }
     })
 
-    // Send reset email
-    try {
-      await sendPasswordResetEmail(user.email, resetToken)
-    } catch (emailError) {
-      console.error('Error sending password reset email:', emailError)
-      // In development, log the token
-      if (process.env.NODE_ENV === 'development') {
-        console.log('DEV MODE: Password reset token:', resetToken)
-        console.log('DEV MODE: Reset URL:', `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`)
-      }
-    }
+    // Generate reset URL (email sending disabled for now)
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`
+    
+    // Log the reset URL (in production, this would send an email)
+    await sendPasswordResetEmail(user.email, resetToken)
+    console.log(`Password reset URL for ${user.email}: ${resetUrl}`)
 
     return NextResponse.json({ 
       message: 'If an account exists with that email, a password reset link has been sent.' 
