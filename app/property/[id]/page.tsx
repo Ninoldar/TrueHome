@@ -121,7 +121,9 @@ export default function PropertyPage() {
     )
   }
 
-  if (error || !property) {
+  // Even if there's an error or property is null, try to show something if we have propertyId
+  // This allows the page to work with minimal data
+  if (error && !property) {
     return (
       <main className="min-h-screen">
         <Header />
@@ -132,6 +134,23 @@ export default function PropertyPage() {
               <Button asChild>
                 <Link href="/">Back to Home</Link>
               </Button>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </main>
+    )
+  }
+
+  // If property is null but no error, show loading or empty state
+  if (!property) {
+    return (
+      <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <Header />
+        <div className="pt-32 pb-16 px-4 sm:px-6 lg:px-8">
+          <div className="container mx-auto max-w-7xl">
+            <div className="text-center py-12">
+              <p className="text-muted-foreground mb-4">Loading property details...</p>
             </div>
           </div>
         </div>
@@ -267,7 +286,7 @@ export default function PropertyPage() {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-6">
               {/* Ownership & Sales History (Consolidated) */}
-              {(property.ownershipEvents && property.ownershipEvents.length > 0) || (property.sales && property.sales.length > 0) ? (
+              {((property.ownershipEvents && property.ownershipEvents.length > 0) || (property.sales && property.sales.length > 0)) ? (
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -356,7 +375,19 @@ export default function PropertyPage() {
                     </div>
                   </CardContent>
                 </Card>
-              ) : null}
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Users className="w-5 h-5" />
+                      Ownership & Sales History
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground text-center py-8">No ownership or sales history available yet.</p>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Remaining Warranties */}
               {property.workEvents && property.workEvents.some(w => {
@@ -429,15 +460,15 @@ export default function PropertyPage() {
               )}
 
               {/* Work History */}
-              {property.workEvents && property.workEvents.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Wrench className="w-5 h-5" />
-                      Work History & Maintenance
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Wrench className="w-5 h-5" />
+                    Work History & Maintenance
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {property.workEvents && property.workEvents.length > 0 ? (
                     <div className="space-y-4">
                       {property.workEvents.map((work) => {
                         const hasActiveWarranty = work.warrantyExpirationDate && new Date(work.warrantyExpirationDate) > new Date()
@@ -479,20 +510,22 @@ export default function PropertyPage() {
                         )
                       })}
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                  ) : (
+                    <p className="text-muted-foreground text-center py-8">No work history or maintenance records available yet.</p>
+                  )}
+                </CardContent>
+              </Card>
 
               {/* Permits */}
-              {property.permits && property.permits.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="w-5 h-5" />
-                      Building Permits
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="w-5 h-5" />
+                    Building Permits
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {property.permits && property.permits.length > 0 ? (
                     <div className="space-y-3">
                       {property.permits.map((permit) => (
                         <div key={permit.id} className="border rounded-lg p-4">
@@ -520,9 +553,11 @@ export default function PropertyPage() {
                         </div>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                  ) : (
+                    <p className="text-muted-foreground text-center py-8">No building permits available yet.</p>
+                  )}
+                </CardContent>
+              </Card>
             </div>
 
             {/* Sidebar */}
