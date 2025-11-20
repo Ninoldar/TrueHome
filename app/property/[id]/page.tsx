@@ -217,7 +217,7 @@ export default function PropertyPage() {
           </div>
 
           {/* Summary Stats */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-white rounded-xl p-6 border-2 border-purple-100 shadow-sm text-center">
               <div className="flex items-center justify-center gap-2 text-purple-600 mb-2">
                 <Users className="w-5 h-5" />
@@ -237,6 +237,19 @@ export default function PropertyPage() {
                 {property.workEvents?.length || 0}
               </div>
               <div className="text-xs text-gray-500 mt-1">Maintenance records</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 border-2 border-green-100 shadow-sm text-center">
+              <div className="flex items-center justify-center gap-2 text-green-600 mb-2">
+                <Award className="w-5 h-5" />
+                <span className="text-sm font-medium">Active Warranties</span>
+              </div>
+              <div className="text-3xl font-bold text-gray-900">
+                {property.workEvents?.filter(w => {
+                  if (!w.warrantyExpirationDate) return false
+                  return new Date(w.warrantyExpirationDate) > new Date()
+                }).length || 0}
+              </div>
+              <div className="text-xs text-gray-500 mt-1">Warranties in effect</div>
             </div>
             <div className="bg-white rounded-xl p-6 border-2 border-indigo-100 shadow-sm text-center">
               <div className="flex items-center justify-center gap-2 text-indigo-600 mb-2">
