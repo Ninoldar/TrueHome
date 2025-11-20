@@ -223,16 +223,17 @@ async function importCSV(filePath: string) {
                 } else {
                   skipped++
                 }
-              } catch (updateErr) {
+              } catch (updateErr: any) {
                 errors++
-                if (errors <= 10 || errors % 1000 === 0) {
-                  console.error(`[Row ${processed}] Error updating property:`, updateErr?.message || updateErr)
+                if (errors <= 20 || errors % 1000 === 0) {
+                  console.error(`[Row ${processed}] Error updating property:`, updateErr?.message || updateErr?.code || String(updateErr).substring(0, 200))
                 }
               }
             } else {
               errors++
-              if (errors <= 10 || errors % 1000 === 0) {
-                console.error(`[Row ${processed}] Error creating property:`, err?.message || err, `Address: ${address}`)
+              if (errors <= 20 || errors % 1000 === 0) {
+                const errorMsg = err?.message || err?.code || String(err).substring(0, 200)
+                console.error(`[Row ${processed}] Error creating property (${address}):`, errorMsg)
               }
             }
           }
@@ -241,8 +242,12 @@ async function importCSV(filePath: string) {
         if (processed % 1000 === 0) {
           console.log(`   Processed ${processed} rows... (${imported} imported, ${skipped} skipped, ${errors} errors)`)
         }
-      } catch (error) {
+      } catch (error: any) {
         errors++
+        if (errors <= 20 || errors % 1000 === 0) {
+          const errorMsg = error?.message || error?.code || String(error).substring(0, 200)
+          console.error(`[Row ${processed}] Processing error:`, errorMsg)
+        }
         if (processed % 1000 === 0) {
           console.log(`   Processed ${processed} rows... (${imported} imported, ${skipped} skipped, ${errors} errors)`)
         }
