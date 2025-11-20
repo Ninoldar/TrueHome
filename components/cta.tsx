@@ -111,37 +111,20 @@ export function CTA() {
       const state = stateZip[0] || ''
       const zipCode = stateZip[1] || ''
 
-      if (!address || !city || !state) {
-        // If parsing fails, try searching by the full query
-        const response = await fetch(`/api/search/autocomplete?q=${encodeURIComponent(searchQuery)}`)
-        const data = await response.json()
-        
-        if (response.ok && data.suggestions && data.suggestions.length > 0) {
-          // Use the first suggestion
-          router.push(`/property/${data.suggestions[0].id}`)
-          return
-        }
-        
-        alert('Please select a property from the suggestions or enter a complete address (Address, City, State ZIP)')
-        setIsSearching(false)
-        return
-      }
-
-      const params = new URLSearchParams({
-        address,
-        city,
-        state,
-        ...(zipCode && { zipCode }),
-      })
-
-      const response = await fetch(`/api/search?${params}`)
+      // Use the search API with the query parameter
+      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`)
       const data = await response.json()
 
       if (!response.ok) {
         throw new Error(data.error || 'Property not found')
       }
 
-      router.push(`/property/${data.property.id}`)
+      if (data.results && data.results.length > 0) {
+        // Use the first result
+        router.push(`/property/${data.results[0].id}`)
+      } else {
+        alert('No properties found. Please select from the suggestions or try a different search.')
+      }
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to search property. Please select from suggestions.')
     } finally {
