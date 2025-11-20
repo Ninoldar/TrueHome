@@ -1,4 +1,5 @@
 import { Home } from "lucide-react"
+import Link from "next/link"
 
 export function Footer() {
   return (
@@ -21,24 +22,19 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Product</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Features
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Pricing
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/sample-report" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Sample Report
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  API
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -73,19 +69,19 @@ export function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Legal</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <Link href="/cookie-policy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Cookie Policy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
