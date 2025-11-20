@@ -8,7 +8,7 @@
   ],
   "scripts": {
     "build": "turbo run build",
-    "db:generate": "cd packages/db && prisma generate",
+    "db:generate": "prisma generate --schema packages/db/prisma/schema.prisma",
     "db:migrate": "cd packages/db && prisma migrate dev",
     "db:migrate:deploy": "cd packages/db && prisma migrate deploy",
     "db:seed": "cd apps/api && ts-node -r tsconfig-paths/register src/ingestion/scripts/seed-sample-data.ts",
@@ -18,7 +18,8 @@
     "docker:up": "docker-compose up -d",
     "lint": "turbo run lint",
     "setup": "npm install && npm run db:generate && npm run db:migrate && npm run db:seed",
-    "vercel:build": "npm install && npm run db:generate && cd apps/web && npm run build"
+    "vercel:build": "npm install && npm run db:generate && cd apps/web && npm run build",
+    "postinstall": "npm run db:generate"
   },
   "dependencies": {
     "@nestjs/common": "latest",
