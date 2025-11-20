@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { propertyId, updateType, description, date, cost } = body
+    const { propertyId, updateType, description, date } = body
 
     if (!propertyId || !description) {
       return NextResponse.json(

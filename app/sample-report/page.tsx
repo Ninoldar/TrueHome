@@ -298,10 +298,6 @@ export default function SampleReportPage() {
                         <div className="text-sm text-gray-600 mb-2">March 2022</div>
                         <div className="text-sm text-gray-700">Complete roof replacement with 30-year warranty. Includes new shingles, underlayment, and flashing.</div>
                       </div>
-                      <div className="text-right ml-4">
-                        <div className="text-2xl font-bold text-orange-600">$12,500</div>
-                        <div className="text-xs text-gray-500">Total Cost</div>
-                      </div>
                     </div>
                     <div className="flex items-center gap-4 pt-4 border-t border-orange-200">
                       <div className="flex items-center gap-1 text-xs text-gray-600">
@@ -316,7 +312,7 @@ export default function SampleReportPage() {
                   </div>
 
                   <div className="bg-blue-50 rounded-xl p-6 border border-blue-200">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -328,15 +324,11 @@ export default function SampleReportPage() {
                         <div className="text-sm text-gray-600 mb-2">August 2021</div>
                         <div className="text-sm text-gray-700">New central air conditioning system installed. Energy-efficient model with smart thermostat.</div>
                       </div>
-                      <div className="text-right ml-4">
-                        <div className="text-2xl font-bold text-blue-600">$8,200</div>
-                        <div className="text-xs text-gray-500">Total Cost</div>
-                      </div>
                     </div>
                   </div>
 
                   <div className="bg-purple-50 rounded-xl p-6 border border-purple-200">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center">
@@ -348,15 +340,11 @@ export default function SampleReportPage() {
                         <div className="text-sm text-gray-600 mb-2">January 2019</div>
                         <div className="text-sm text-gray-700">Complete kitchen remodel with new appliances, cabinets, countertops, and flooring.</div>
                       </div>
-                      <div className="text-right ml-4">
-                        <div className="text-2xl font-bold text-purple-600">$28,000</div>
-                        <div className="text-xs text-gray-500">Total Cost</div>
-                      </div>
                     </div>
                   </div>
 
                   <div className="bg-cyan-50 rounded-xl p-6 border border-cyan-200">
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
@@ -368,23 +356,14 @@ export default function SampleReportPage() {
                         <div className="text-sm text-gray-600 mb-2">November 2018</div>
                         <div className="text-sm text-gray-700">Replaced main water line and updated fixtures throughout the home.</div>
                       </div>
-                      <div className="text-right ml-4">
-                        <div className="text-2xl font-bold text-cyan-600">$5,400</div>
-                        <div className="text-xs text-gray-500">Total Cost</div>
-                      </div>
                     </div>
                   </div>
                 </div>
                 <div className="mt-6 pt-6 border-t border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm text-gray-500">Total Maintenance Investment</div>
-                      <div className="text-2xl font-bold text-gray-900">$54,100</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-gray-500">Last 6 Years</div>
-                      <div className="text-lg font-semibold text-green-600">Well Maintained</div>
-                    </div>
+                  <div className="text-center">
+                    <div className="text-sm text-gray-500 mb-2">Maintenance History</div>
+                    <div className="text-lg font-semibold text-green-600">Well Maintained</div>
+                    <div className="text-xs text-gray-500 mt-1">Regular maintenance and updates over the past 6 years</div>
                   </div>
                 </div>
               </div>

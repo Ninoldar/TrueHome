@@ -37,8 +37,7 @@ export default function DashboardPage() {
     propertyId: '',
     updateType: 'maintenance',
     description: '',
-    date: new Date().toISOString().split('T')[0],
-    cost: ''
+    date: new Date().toISOString().split('T')[0]
   })
 
   useEffect(() => {
@@ -95,8 +94,7 @@ export default function DashboardPage() {
           propertyId: '',
           updateType: 'maintenance',
           description: '',
-          date: new Date().toISOString().split('T')[0],
-          cost: ''
+          date: new Date().toISOString().split('T')[0]
         })
         fetchDashboardData()
       } else {
@@ -260,33 +258,17 @@ export default function DashboardPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="date" className="block text-sm font-medium mb-2">
-                      Date
-                    </label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={updateForm.date}
-                      onChange={(e) => setUpdateForm({ ...updateForm, date: e.target.value })}
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="cost" className="block text-sm font-medium mb-2">
-                      Cost (optional)
-                    </label>
-                    <Input
-                      id="cost"
-                      type="number"
-                      step="0.01"
-                      value={updateForm.cost}
-                      onChange={(e) => setUpdateForm({ ...updateForm, cost: e.target.value })}
-                      placeholder="0.00"
-                    />
-                  </div>
+                <div>
+                  <label htmlFor="date" className="block text-sm font-medium mb-2">
+                    Date
+                  </label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={updateForm.date}
+                    onChange={(e) => setUpdateForm({ ...updateForm, date: e.target.value })}
+                    required
+                  />
                 </div>
 
                 <Button type="submit" className="w-full">
